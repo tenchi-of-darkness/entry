@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 128 128" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:1.5;">
+    <g id="SadCat" transform="matrix(0.591431,0,0,2.788135,-192.773194,-1162.390837)">
+        <g transform="matrix(2.223919,0,0,0.471831,-0.532134,0.075435)">
+            <path d="M160.2,920.8C154.8,946 167.6,972.4 183.3,972.9L208.7,972.9C223.5,972.3 236.7,946 230,923.1C229.8,922.5 232.1,893 227.2,891.3C222.3,889.6 201.2,910.8 201.2,910.8C197.6,909.5 193.7,909.8 189.7,910.8C189.7,910.8 170.2,889.7 165.3,891.4C160.4,893.1 160.2,920.8 160.2,920.8" style="fill:rgb(16,47,149);stroke:black;stroke-width:2.3px;"/>
+        </g>
+        <g transform="matrix(0.857696,0,0,0.19576,231.63085,252.463338)">
+            <ellipse cx="192.8" cy="948.5" rx="12.5" ry="11.5" style="stroke:black;stroke-width:1.9px;"/>
+        </g>
+        <g transform="matrix(0.857696,0,0,0.19576,306.934538,252.463338)">
+            <ellipse cx="192.8" cy="948.5" rx="12.5" ry="11.5" style="stroke:black;stroke-width:1.9px;"/>
+        </g>
+        <g id="Mouth">
+            <g transform="matrix(2.223919,0,0,0.471831,-1284.742586,-111.777671)">
+                <path d="M772.5,1183.2L772.5,1191.2" style="fill:none;stroke:black;stroke-width:0.9px;"/>
+            </g>
+            <g transform="matrix(2.223919,0,0,0.471831,-1506.629191,-111.777671)">
+                <path d="M872.3,1191.2C865.4,1191.3 860.9,1194.1 858.3,1199.1" style="fill:none;stroke:black;stroke-width:0.9px;"/>
+            </g>
+            <g transform="matrix(-2.223919,0,0,0.471831,2372.998276,-111.777671)">
+                <path d="M872.3,1191.2C865.4,1191.3 860.9,1194.1 858.3,1199.1" style="fill:none;stroke:black;stroke-width:0.9px;"/>
+            </g>
+        </g>
+        <g id="Nose" transform="matrix(2.223919,0,0,0.471831,0,-0.612911)">
+            <path d="M194.5,947L190.1,943.7C189.9,943.6 189.9,943.3 189.9,943.1C190,942.9 190.2,942.8 190.4,942.8L198.7,942.8C199,942.8 199.1,943 199.2,943.2C199.3,943.4 199.2,943.6 199.1,943.7L195.1,947C195,947.2 194.7,947.2 194.5,947Z" style="stroke:black;stroke-width:0.9px;"/>
+        </g>
+        <g id="Whiskers-Right" serif:id="Whiskers Right" transform="matrix(1,0,0,1,2.604152,1.434778)">
+            <g transform="matrix(2.223919,0,0,0.471831,0,0)">
+                <path d="M205.5,943.1C213.5,944.7 231.3,949.4 238.5,949.8" style="fill:none;stroke:black;stroke-width:0.9px;"/>
+            </g>
+            <g transform="matrix(2.223919,0,0,0.471831,0,0)">
+                <path d="M205.5,939.5C212.9,938.3 238.5,938.6 238.5,938.6" style="fill:none;stroke:black;stroke-width:0.9px;"/>
+            </g>
+            <g transform="matrix(2.223919,0,0,0.471831,0,0)">
+                <path d="M205.5,941.4C213.5,941.3 231.3,943.9 238.5,944.5" style="fill:none;stroke:black;stroke-width:0.9px;"/>
+            </g>
+        </g>
+        <g id="Whiskers-Left" serif:id="Whiskers Left" transform="matrix(-1,0,0,1,865.707941,1.434778)">
+            <g transform="matrix(2.223919,0,0,0.471831,0,0)">
+                <path d="M205.5,943.1C213.5,944.7 231.3,949.4 238.5,949.8" style="fill:none;stroke:black;stroke-width:0.9px;"/>
+            </g>
+            <g transform="matrix(2.223919,0,0,0.471831,0,0)">
+                <path d="M205.5,939.5C212.9,938.3 238.5,938.6 238.5,938.6" style="fill:none;stroke:black;stroke-width:0.9px;"/>
+            </g>
+            <g transform="matrix(2.223919,0,0,0.471831,0,0)">
+                <path d="M205.5,941.4C213.5,941.3 231.3,943.9 238.5,944.5" style="fill:none;stroke:black;stroke-width:0.9px;"/>
+            </g>
+        </g>
+    </g>
+</svg>

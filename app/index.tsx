@@ -4,6 +4,9 @@ import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import {Colors} from "@/constants/theme";
 import {Link} from "expo-router";
 import {useColorScheme} from '@/hooks/use-color-scheme';
+import {HappyCat} from "@/components/icons/cats/happy-cat";
+import {AngryCat} from "@/components/icons/cats/angry-cat";
+
 
 const HomeScreen = () => {
     const colorScheme = useColorScheme() ?? 'light';
@@ -22,7 +25,7 @@ const HomeScreen = () => {
             width: 100,
             height: 100,
             borderRadius: 999,
-            backgroundColor: Colors[colorScheme].tint,
+            backgroundColor: Colors[colorScheme].background,
         },
         row: {
             flexDirection: 'row',
@@ -45,9 +48,25 @@ const HomeScreen = () => {
                     <Link href="/mood" asChild>
                         <TouchableOpacity
                             style={{padding: 10, marginTop: 20, alignSelf: "center"}}>
-                            <Text style={{color: '#fff'}}>Go to Mood</Text>
+                            <Text style={{color: Colors[colorScheme].text}}>Go to Mood</Text>
                         </TouchableOpacity>
                     </Link>
+                    <Link href="/modal" asChild>
+                        <TouchableOpacity
+                            style={{padding: 10, alignSelf: "center"}}>
+                            <Text style={{color: Colors[colorScheme].text}}>Go to Modal</Text>
+                        </TouchableOpacity>
+                    </Link>
+                    <HappyCat/>
+                    <AngryCat/>
+                    <HappyCat/>
+                    <HappyCat/>
+                    <HappyCat/>
+                    <HappyCat/>
+                    <HappyCat/>
+                    <HappyCat/>
+                    <HappyCat/>
+                    <HappyCat/>
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>

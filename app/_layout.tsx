@@ -1,21 +1,17 @@
 import {DarkTheme, DefaultTheme, ThemeProvider} from '@react-navigation/native';
 import {StatusBar} from 'expo-status-bar';
-import 'react-native-reanimated';
 
 import {useColorScheme} from '@/hooks/use-color-scheme';
 import {Stack} from "expo-router";
-
-export const unstable_settings = {
-    anchor: '(tabs)',
-};
+import {Colors} from "@/constants/theme";
 
 export default function RootLayout() {
-    const colorScheme = useColorScheme();
+    const colorScheme = useColorScheme() ?? "light";
 
     return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <Stack/>
-            <StatusBar style="auto"/>
+            <Stack screenOptions={{headerStyle: {backgroundColor: Colors[colorScheme].primary}}}/>
+            <StatusBar style={"auto"}/>
         </ThemeProvider>
     );
 }

@@ -1,12 +1,43 @@
-
 import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
 import React from "react";
-import {StyleSheet, View, Text} from "react-native";
+import {StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View} from "react-native";
 import {Colors} from "@/constants/theme";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { useColorScheme } from "@/hooks/use-color-scheme";
+import {useColorScheme} from "@/hooks/use-color-scheme";
 
 const heartSize = 115;
+
+interface HeartButtonProps extends TouchableOpacityProps {
+    reversed?: boolean;
+    color?: string;
+    centeredText?: string;
+}
+
+function HeartButton({reversed, children, color, ...props}: HeartButtonProps) {
+    const colorScheme = useColorScheme() ?? 'light';
+
+    return (
+        <TouchableOpacity {...props}>
+            <FontAwesome
+                name="heart"
+                size={heartSize}
+                color={color ?? Colors[colorScheme].accent}
+                style={reversed && {transform: [{rotate: "180deg"}]}}
+            />
+            {props.centeredText && (
+                <Text style={{
+                    alignSelf: "center",
+                    verticalAlign: "middle",
+                    position: "absolute",
+                    height: reversed ? heartSize + 5 : heartSize - 5,
+                    fontSize: 24
+                }}>
+                    {props.centeredText}
+                </Text>
+            )}
+        </TouchableOpacity>
+    )
+}
 
 export default function MoodScreen() {
     const colorScheme = useColorScheme() ?? 'light';
@@ -54,21 +85,21 @@ export default function MoodScreen() {
                 <Text style={styles.titleText}>mood</Text>
                 <View style={styles.heartContainer}>
                     <View style={styles.heartRow}>
-                        <FontAwesome name="heart" size={heartSize} color="yellow" />
-                        <FontAwesome name="heart" size={heartSize} color={Colors[colorScheme].icon} />
+                        <HeartButton centeredText={"4"}></HeartButton>
+                        <HeartButton centeredText={"4"}></HeartButton>
                     </View>
                     <View style={{...styles.heartRow, justifyContent: "center"}}>
-                        <FontAwesome name="heart" size={heartSize} color={Colors[colorScheme].icon} />
+                        <HeartButton centeredText={"4"}></HeartButton>
                     </View>
                     <View style={styles.heartRow}>
-                        <FontAwesome name="heart" size={heartSize} color={Colors[colorScheme].icon} />
-                        <FontAwesome name="heart" size={heartSize} color={Colors[colorScheme].icon} />
+                        <HeartButton centeredText={"4"}></HeartButton>
+                        <HeartButton centeredText={"4"}></HeartButton>
                     </View>
                     <View style={styles.heartRow}>
                     </View>
                     <View style={styles.heartRow}>
-                        <FontAwesome name="heart" size={heartSize} color={Colors[colorScheme].icon} />
-                        <FontAwesome name="heart" size={heartSize} color={Colors[colorScheme].icon} />
+                        <HeartButton centeredText={"4"} reversed={true}></HeartButton>
+                        <HeartButton centeredText={"4"} reversed={true}></HeartButton>
                     </View>
                 </View>
             </SafeAreaView>
