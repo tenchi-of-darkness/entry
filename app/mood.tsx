@@ -1,45 +1,13 @@
 import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
 import React from "react";
-import {StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {Colors} from "@/constants/theme";
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {useColorScheme} from "@/hooks/use-color-scheme";
-
-const heartSize = 115;
-
-interface HeartButtonProps extends TouchableOpacityProps {
-    reversed?: boolean;
-    color?: string;
-    centeredText?: string;
-}
-
-function HeartButton({reversed, children, color, ...props}: HeartButtonProps) {
-    const colorScheme = useColorScheme() ?? 'light';
-
-    return (
-        <TouchableOpacity {...props}>
-            <FontAwesome
-                name="heart"
-                size={heartSize}
-                color={color ?? Colors[colorScheme].accent}
-                style={reversed && {transform: [{rotate: "180deg"}]}}
-            />
-            {props.centeredText && (
-                <Text style={{
-                    alignSelf: "center",
-                    verticalAlign: "middle",
-                    position: "absolute",
-                    height: reversed ? heartSize + 5 : heartSize - 5,
-                    fontSize: 24
-                }}>
-                    {props.centeredText}
-                </Text>
-            )}
-        </TouchableOpacity>
-    )
-}
+import {HeartButton, HeartButtonSize} from "@/components/heart-button";
+import {MoodModal, useMoodModal} from "@/components/mood-modal";
 
 export default function MoodScreen() {
+    const modal = useMoodModal();
     const colorScheme = useColorScheme() ?? 'light';
 
     const styles = React.useMemo(() => StyleSheet.create({
@@ -66,17 +34,50 @@ export default function MoodScreen() {
         heartRow: {
             flexDirection: 'row',
             justifyContent: 'space-between',
-            height: heartSize,
+            height: HeartButtonSize,
             paddingHorizontal: 24,
         },
         heartContainer: {
             gap: 5,
-        }
+        },
+        modalContainer: {
+            flex: 1,
+        },
+        button: {
+            alignSelf: "center",
+            padding: 12,
+            elevation: 2,
+            borderRadius: 15
+        },
+        buttonOpen: {
+            backgroundColor: Colors[colorScheme].accent,
+        },
+        buttonClose: {
+            backgroundColor: Colors[colorScheme].accent,
+            marginTop: 30
+        },
+        buttonText: {
+            color: Colors[colorScheme].background,
+            fontWeight: "bold",
+        },
+        modalText: {
+            fontSize: 30,
+            color: Colors[colorScheme].text,
+            fontWeight: '600',
+            alignSelf: "center",
+            paddingTop: 20,
+        },
     }), [colorScheme]);
 
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
+                <MoodModal state={modal.state} setVisible={(visible) => {
+                    modal.setState((prevState) => ({
+                        visible: visible,
+                        dayOfWeek: prevState.dayOfWeek
+                    }));
+                }}/>
                 <View style={styles.dateContainer}>
                     <Text style={styles.dateText}>December 1</Text>
                     <Text style={styles.dateText}>weekly</Text>
@@ -85,21 +86,74 @@ export default function MoodScreen() {
                 <Text style={styles.titleText}>mood</Text>
                 <View style={styles.heartContainer}>
                     <View style={styles.heartRow}>
-                        <HeartButton centeredText={"4"}></HeartButton>
-                        <HeartButton centeredText={"4"}></HeartButton>
+                        <HeartButton
+                            onPress={() => {
+                                modal.setState({
+                                    visible: true,
+                                    dayOfWeek: 1
+                                });
+                            }}
+                            centeredText={"1"}/>
+                        <HeartButton
+                            onPress={() => {
+                                modal.setState({
+                                    visible: true,
+                                    dayOfWeek: 2
+                                });
+                            }}
+                            centeredText={"2"}/>
                     </View>
                     <View style={{...styles.heartRow, justifyContent: "center"}}>
-                        <HeartButton centeredText={"4"}></HeartButton>
+                        <HeartButton
+                            onPress={() => {
+                                modal.setState({
+                                    visible: true,
+                                    dayOfWeek: 3
+                                });
+                            }}
+                            centeredText={"3"}/>
                     </View>
                     <View style={styles.heartRow}>
-                        <HeartButton centeredText={"4"}></HeartButton>
-                        <HeartButton centeredText={"4"}></HeartButton>
+                        <HeartButton
+                            onPress={() => {
+                                modal.setState({
+                                    visible: true,
+                                    dayOfWeek: 4
+                                });
+                            }}
+                            centeredText={"4"}/>
+                        <HeartButton
+                            onPress={() => {
+                                modal.setState({
+                                    visible: true,
+                                    dayOfWeek: 5
+                                });
+                            }}
+                            centeredText={"5"}/>
                     </View>
                     <View style={styles.heartRow}>
                     </View>
                     <View style={styles.heartRow}>
-                        <HeartButton centeredText={"4"} reversed={true}></HeartButton>
-                        <HeartButton centeredText={"4"} reversed={true}></HeartButton>
+                        <HeartButton
+                            onPress={() => {
+                                modal.setState({
+                                    visible: true,
+                                    dayOfWeek: 6
+                                });
+                            }}
+                            centeredText={"6"}
+                            reversed={true}
+                        />
+                        <HeartButton
+                            onPress={() => {
+                                modal.setState({
+                                    visible: true,
+                                    dayOfWeek: 7
+                                });
+                            }}
+                            centeredText={"7"}
+                            reversed={true}
+                        />
                     </View>
                 </View>
             </SafeAreaView>

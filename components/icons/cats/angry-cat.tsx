@@ -1,9 +1,9 @@
 import * as React from "react";
-import Svg, {Defs, Ellipse, G, Mask, Path} from "react-native-svg";
+import Svg, {Defs, Ellipse, G, Mask, Path, SvgProps} from "react-native-svg";
 import {Colors} from "@/constants/theme";
 import {useColorScheme} from "@/hooks/use-color-scheme";
 
-export const AngryCat = () => {
+export const AngryCat = (props: SvgProps) => {
     const colorScheme = useColorScheme() ?? 'light';
 
     return (
@@ -14,6 +14,7 @@ export const AngryCat = () => {
             strokeMiterlimit="1.5"
             clipRule="evenodd"
             viewBox="0 0 128 128"
+            {...props}
         >
             <G id="SadCat" transform="matrix(.59143 0 0 2.78764 -192.773 -1162.172)">
                 <Path
@@ -24,12 +25,14 @@ export const AngryCat = () => {
                     transform="matrix(2.22392 0 0 .47183 -.532 .075)"
                 ></Path>
                 <Path
+                    fill={Colors[colorScheme].cats.insideBorders}
                     stroke={Colors[colorScheme].cats.insideBorders}
                     strokeWidth="0.89"
                     d="M1022.978 1168.181c5.456 5.331 11.716-.258 11.356-7.511z"
                     transform="matrix(2.22392 0 0 .47183 -1814.025 -111.968)"
                 ></Path>
                 <Path
+                    fill={Colors[colorScheme].cats.insideBorders}
                     stroke={Colors[colorScheme].cats.insideBorders}
                     strokeWidth="0.89"
                     d="M1022.978 1168.181c5.456 5.331 11.716-.258 11.356-7.511z"

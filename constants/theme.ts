@@ -27,7 +27,8 @@ export const Colors = {
             border: ColorPalette.evergreen,
             insideBorders: ColorPalette.evergreen,
             happy: "#f0e056",
-            angry: "#d20131"
+            angry: "#d20131",
+            sad: "#204fe7"
         }
     },
     dark: {
@@ -42,7 +43,8 @@ export const Colors = {
             border: ColorPalette.evergreen,
             insideBorders: ColorPalette.evergreen,
             happy: "#bfaf02",
-            angry: "#a4001b"
+            angry: "#a4001b",
+            sad: "#102F95"
         }
     },
 };

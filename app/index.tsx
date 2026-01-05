@@ -6,6 +6,7 @@ import {Link} from "expo-router";
 import {useColorScheme} from '@/hooks/use-color-scheme';
 import {HappyCat} from "@/components/icons/cats/happy-cat";
 import {AngryCat} from "@/components/icons/cats/angry-cat";
+import {SadCat} from "@/components/icons/cats/sad-cat";
 
 
 const HomeScreen = () => {
@@ -44,22 +45,15 @@ const HomeScreen = () => {
         <SafeAreaProvider>
             <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
                 <ScrollView>
-                    {/*This link takes you to profile.js */}
                     <Link href="/mood" asChild>
                         <TouchableOpacity
                             style={{padding: 10, marginTop: 20, alignSelf: "center"}}>
                             <Text style={{color: Colors[colorScheme].text}}>Go to Mood</Text>
                         </TouchableOpacity>
                     </Link>
-                    <Link href="/modal" asChild>
-                        <TouchableOpacity
-                            style={{padding: 10, alignSelf: "center"}}>
-                            <Text style={{color: Colors[colorScheme].text}}>Go to Modal</Text>
-                        </TouchableOpacity>
-                    </Link>
                     <HappyCat/>
                     <AngryCat/>
-                    <HappyCat/>
+                    <SadCat/>
                     <HappyCat/>
                     <HappyCat/>
                     <HappyCat/>

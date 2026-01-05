@@ -1,9 +1,9 @@
 import * as React from "react";
-import Svg, {Ellipse, G, Path} from "react-native-svg";
+import Svg, {Ellipse, G, Path, SvgProps} from "react-native-svg";
 import {useColorScheme} from "@/hooks/use-color-scheme";
 import {Colors} from "@/constants/theme";
 
-export const HappyCat = () => {
+export const HappyCat = (props: SvgProps) => {
     const colorScheme = useColorScheme() ?? 'light';
 
     return (
@@ -14,6 +14,7 @@ export const HappyCat = () => {
             strokeMiterlimit="1.5"
             clipRule="evenodd"
             viewBox="0 0 128 128"
+            {...props}
         >
             <G id="HappyCat" transform="matrix(.59153 0 0 2.78812 -191.816 -1162.384)">
                 <Path
