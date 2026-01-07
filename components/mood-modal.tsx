@@ -1,16 +1,11 @@
-import React, {useState} from 'react';
-import {Alert, Dimensions, FlatList, Modal, Pressable, StyleSheet, Text, View} from "react-native";
-import {Emotion, getEmotionIcon, getEmotionTitle} from "@/constants/emotions";
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {Alert, Dimensions, FlatList, Modal, Pressable, StyleSheet, Text, useWindowDimensions, View} from "react-native";
+import {Emotion, getEmotionEnumValues, getEmotionIcon, getEmotionTitle,} from "@/constants/emotions";
 import {useTheme} from "@/hooks/use-theme";
-import {CarouselItem} from "@/lib/mood/carousel-item";
-import {HeartButtonSize} from "@/components/heart-button";
 import {useMoodReducer} from "@/hooks/use-mood-reducer";
-
-const DATA: CarouselItem[] = [
-    {id: "1", emotion: Emotion.Happy, Icon: getEmotionIcon(Emotion.Happy)!},
-    {id: "2", emotion: Emotion.Angry, Icon: getEmotionIcon(Emotion.Angry)!},
-    {id: "3", emotion: Emotion.Sad, Icon: getEmotionIcon(Emotion.Sad)!}
-];
+import {Canvas, LinearGradient, Rect, vec} from "@shopify/react-native-skia";
+import {useDerivedValue, useSharedValue, withTiming} from "react-native-reanimated";
+import * as chroma from 'chroma.ts'
 
 const {width} = Dimensions.get("window");
 const ITEM_LENGTH = width;
@@ -32,14 +27,38 @@ export function useMoodModal() {
 export interface MoodModalProps {
     state: MoodModalState;
     setVisible: (visible: boolean) => void;
+    setDayOfWeekEmotion: (dayOfWeek: number, emotion: Emotion) => void;
 }
 
+const EmotionValues = getEmotionEnumValues()
+
 export function MoodModal(props: MoodModalProps) {
+    const {width, height} = useWindowDimensions();
     const theme = useTheme();
+
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const viewabilityConfig = useRef({
+        itemVisiblePercentThreshold: 90
+    }).current;
+
+    // @ts-ignore
+    const onViewableItemsChanged = useRef(({viewableItems}) => {
+        if (viewableItems.length > 0) {
+            setActiveIndex(viewableItems[0].index);
+        }
+    }).current;
 
     const styles = React.useMemo(() => StyleSheet.create({
         modalContainer: {
             flex: 1,
+        },
+        backgroundCanvas: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
         },
         iconContainer: {
             paddingTop: 32,
@@ -68,7 +87,22 @@ export function MoodModal(props: MoodModalProps) {
             paddingTop: 20,
         },
     }), [theme]);
-    const [moodData, setMoodData] = useMoodReducer();
+
+
+
+    const leftColor = useSharedValue(chroma.css(theme.cats[EmotionValues[activeIndex]]).brighter(0.5).hex());
+    const rightColor = useSharedValue(chroma.css(theme.cats[EmotionValues[activeIndex]]).darker(0.5).hex());
+
+    useEffect(() => {
+        leftColor.set(withTiming(chroma.css(theme.cats[EmotionValues[activeIndex]]).brighter(0.5).hex()))
+        rightColor.set(withTiming(chroma.css(theme.cats[EmotionValues[activeIndex]]).darker(0.5).hex()))
+    }, [activeIndex]);
+
+
+    const colors = useDerivedValue(() => {
+        return [leftColor.value, rightColor.value];
+    }, []);
+
 
     return (
         <Modal
@@ -80,29 +114,50 @@ export function MoodModal(props: MoodModalProps) {
                 props.setVisible(false);
             }}
         >
+            <Canvas style={styles.backgroundCanvas}>
+                <Rect x={0} y={0} width={width} height={height}>
+                    <LinearGradient
+                        start={vec(500, 0)}
+                        end={vec(width, height)}
+                        colors={colors}
+                    />
+                </Rect>
+            </Canvas>
             <View style={styles.modalContainer}>
                 <Text style={styles.modalText}>How are you feeling today?</Text>
                 <FlatList
                     style={{flexGrow: 0}}
-                    data={DATA}
-                    renderItem={({item, index}) => {
+                    data={EmotionValues}
+                    renderItem={({item}) => {
                         return (
                             <View>
                                 <View style={styles.iconContainer}>
-                                    {item.Icon}
+                                    {getEmotionIcon(item)}
                                 </View>
                                 <Text style={styles.modalText}>
-                                    {getEmotionTitle(item.emotion)}
+                                    {getEmotionTitle(item)}
                                 </Text>
                             </View>
-
                         );
                     }}
-                    keyExtractor={(item) => item.id}
+                    keyExtractor={(item) => String(item)}
                     horizontal
                     pagingEnabled
+                    decelerationRate="fast"
                     showsHorizontalScrollIndicator={false}
+                    onViewableItemsChanged={onViewableItemsChanged}
+                    viewabilityConfig={viewabilityConfig}
                 />
+                <Pressable
+                    style={[styles.button, styles.buttonClose]}
+
+                    onPress={() => {
+                        props.setVisible(false);
+                        props.setDayOfWeekEmotion(props.state.dayOfWeek, EmotionValues[activeIndex])
+                    }}
+                >
+                    <Text style={styles.buttonText}>Apply</Text>
+                </Pressable>
                 <Pressable
                     style={[styles.button, styles.buttonClose]}
                     onPress={() => {

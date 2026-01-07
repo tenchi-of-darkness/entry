@@ -1,13 +1,8 @@
-import React, {useReducer, useState} from "react";
-import {useColorScheme} from "@/hooks/use-color-scheme";
-import {StyleSheet} from "react-native";
-import {Colors} from "@/constants/theme";
-import {HeartButtonSize} from "@/components/heart-button";
+import {useReducer} from "react";
 import {WeekMoodState} from "@/lib/mood/week-mood-state";
 import {Emotion} from "@/constants/emotions";
-import {MoodState} from "@/lib/mood/mood-state";
 
-const MaxMeasurements = 3;
+const MaxMeasurements = 1;
 
 export const EmptyWeekMoodState: WeekMoodState = {
     1: {
@@ -89,6 +84,5 @@ function moodReducer(state: WeekMoodState, action: MoodAction) {
 }
 
 export function useMoodReducer() {
-    const [moodData, setMoodData] = useReducer(moodReducer, EmptyWeekMoodState);
-    return [moodData, setMoodData]
+    return useReducer(moodReducer, EmptyWeekMoodState)
 }
