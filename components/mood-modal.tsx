@@ -2,7 +2,6 @@ import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Alert, Dimensions, FlatList, Modal, Pressable, StyleSheet, Text, useWindowDimensions, View} from "react-native";
 import {Emotion, getEmotionEnumValues, getEmotionIcon, getEmotionTitle,} from "@/constants/emotions";
 import {useTheme} from "@/hooks/use-theme";
-import {useMoodReducer} from "@/hooks/use-mood-reducer";
 import {Canvas, LinearGradient, Rect, vec} from "@shopify/react-native-skia";
 import {useDerivedValue, useSharedValue, withTiming} from "react-native-reanimated";
 import * as chroma from 'chroma.ts'

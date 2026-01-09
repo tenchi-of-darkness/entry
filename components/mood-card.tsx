@@ -8,22 +8,24 @@ interface FeatureCardProps extends TouchableOpacityProps {
     iconName: React.ComponentProps<typeof FontAwesome>["name"];
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({title, iconName, onPress, ...props
+const cardPadding = 10;
+
+export const EmptyFeatureCard: React.FC = () => <View style={{flex: 1, padding: cardPadding, backgroundColor: 'transparent'}}/>
+export const FeatureCard: React.FC<FeatureCardProps> = ({
+                                                     title, iconName, onPress, ...props
                                                  }) => {
     const theme = useTheme();
 
     const styles = React.useMemo(
         () =>
-            StyleSheet.create({
+            (StyleSheet.create({
                 card: {
+                    flex: 1,
                     backgroundColor: theme.secondary,
                     borderRadius: 15,
-                    padding: 10,
-                    flex: 1,
+                    padding: cardPadding,
                     justifyContent: "center",
                     alignItems: "center",
-                    // @ts-expect-error calculations and types don't go together
-                    maxWidth: 100/3 + "%",
                 },
                 header: {
                     marginBottom: 10,
@@ -34,12 +36,12 @@ const FeatureCard: React.FC<FeatureCardProps> = ({title, iconName, onPress, ...p
                     fontWeight: "bold",
                     color: theme.text,
                 },
-            }),
+            })),
         [theme]
     );
 
     return (
-        <TouchableOpacity style={styles.card} onPress={onPress} {...props}>
+        <TouchableOpacity style={[styles.card]} onPress={onPress} {...props}>
             <View style={styles.header}>
                 <Text style={styles.title}>{title}</Text>
             </View>
@@ -48,5 +50,3 @@ const FeatureCard: React.FC<FeatureCardProps> = ({title, iconName, onPress, ...p
         </TouchableOpacity>
     );
 };
-
-export default FeatureCard;

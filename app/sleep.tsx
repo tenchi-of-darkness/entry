@@ -6,8 +6,6 @@ import { MoodActionKind, useMoodReducer } from "@/hooks/use-mood-reducer";
 import { useTheme } from "@/hooks/use-theme";
 import { addDays, subDays } from "date-fns";
 
-/* ---------------- Bubble Button (inline) ---------------- */
-
 const BubbleSize = 56;
 
 function BubbleButton({
@@ -27,8 +25,6 @@ function BubbleButton({
         </Pressable>
     );
 }
-
-/* ---------------- Screen ---------------- */
 
 export default function MoodBubbleScreen() {
     const modal = useMoodModal();

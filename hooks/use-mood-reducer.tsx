@@ -31,6 +31,7 @@ export const EmptyWeekMoodState: WeekMoodState = {
 export enum MoodActionKind {
     add = "add",
     update = "update",
+    hydrate = "hydrate",
 }
 
 export type MoodAction = {
@@ -42,19 +43,23 @@ export type MoodAction = {
     dayOfWeek: number;
     index: number;
     emotion: Emotion;
+} | {
+    type: MoodActionKind.hydrate;
+    state: WeekMoodState;
 }
 
 function moodReducer(state: WeekMoodState, action: MoodAction) {
     const type = action.type;
-    const emotion = action.emotion;
-    const dayOfWeek = action.dayOfWeek;
 
     switch (type) {
         case MoodActionKind.add:
-            if (state[dayOfWeek].measurements.length >= MaxMeasurements) {
+            if (state[action.dayOfWeek].measurements.length >= MaxMeasurements) {
                 return state;
             }
         {
+            const emotion = action.emotion;
+            const dayOfWeek = action.dayOfWeek;
+
             let newState = {...state};
             newState[dayOfWeek].measurements.push({
                 emotion: emotion,
@@ -66,10 +71,13 @@ function moodReducer(state: WeekMoodState, action: MoodAction) {
             const index = action.index;
             const cutoffTime = new Date();
             cutoffTime.setHours(cutoffTime.getHours() - 2);
-            if (!state[dayOfWeek].measurements[index] || state[dayOfWeek].measurements[index].date <= cutoffTime) {
+            if (!state[action.dayOfWeek].measurements[index] || state[action.dayOfWeek].measurements[index].date <= cutoffTime) {
                 return state;
             }
         {
+            const emotion = action.emotion;
+            const dayOfWeek = action.dayOfWeek;
+
             let newState = {...state};
 
             newState[dayOfWeek].measurements[index] = {
@@ -78,6 +86,8 @@ function moodReducer(state: WeekMoodState, action: MoodAction) {
             };
             return newState;
         }
+        case MoodActionKind.hydrate:
+            return action.state;
         default:
             return state;
     }

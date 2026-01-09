@@ -1,10 +1,10 @@
 import React from 'react';
-import {FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import {Colors} from "@/constants/theme";
 import {Href, Link, router} from "expo-router";
 import {useColorScheme} from '@/hooks/use-color-scheme';
-import FeatureCard from "@/components/mood-card";
+import {EmptyFeatureCard, FeatureCard} from "@/components/mood-card";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 
@@ -43,67 +43,111 @@ const HomeScreen = () => {
         },
     }), [colorScheme]);
 
-    const cardValues: {
+    const cardValues: ({
         title: string;
         iconName: React.ComponentProps<typeof FontAwesome>["name"];
         path: Href;
-    }[] = [
+        empty: false;
+    } | {
+        empty: true;
+    })[] = [
         {
             title: "Mood",
             iconName: "smile-o",
-            path: "/mood"
+            path: "/mood",
+            empty: false,
         },
         {
             title: "Day",
             iconName: "star",
-            path: "/hobby"
+            path: "/hobby",
+            empty: false,
         },
         {
             title: "Sleep",
             iconName: "moon-o",
-            path: "/sleep"
+            path: "/sleep",
+            empty: false,
         },
         {
             title: "Mood",
             iconName: "smile-o",
-            path: "/mood"
+            path: "/mood",
+            empty: false,
+        },
+        {
+            title: "Mood",
+            iconName: "smile-o",
+            path: "/mood",
+            empty: false,
+        },
+        {
+            title: "Mood",
+            iconName: "smile-o",
+            path: "/mood",
+            empty: false,
+        },
+        {
+            title: "Mood",
+            iconName: "smile-o",
+            path: "/mood",
+            empty: false,
         }
-        ]
+    ];
+
+    const numColumns = 3;
+
+    const formatData = (data: typeof cardValues, columns: number) => {
+        const dataCopy = [...data];
+        const numberOfFullRows = Math.floor(dataCopy.length / columns);
+
+        let numberOfElementsLastRow = dataCopy.length - (numberOfFullRows * columns);
+        while (numberOfElementsLastRow !== columns && numberOfElementsLastRow !== 0) {
+            dataCopy.push({empty: true});
+            numberOfElementsLastRow++;
+        }
+
+        return dataCopy;
+    };
+
 
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
-                <ScrollView>
-                    <Text style={styles.text}>Good morning, user</Text>
-                    <Text style={styles.date}>{formattedDate}</Text>
-                    <Link href="/mood" asChild>
-                        <TouchableOpacity
-                            style={{padding: 10, marginTop: 20, alignSelf: "center"}}>
-                        </TouchableOpacity>
-                    </Link>
-                    <FlatList
-                        contentContainerStyle={{
-                            gap: 5,
-                        }}
-                        columnWrapperStyle={{
-                            gap: 5,
-                        }}
-                        style={styles.list}
-                        data={cardValues}
-                        numColumns={3}
-                        renderItem={({item}) => {
+                <Text style={styles.text}>Good morning, user</Text>
+                <Text style={styles.date}>{formattedDate}</Text>
+                <Link href="/mood" asChild>
+                    <TouchableOpacity
+                        style={{padding: 10, marginTop: 20, alignSelf: "center"}}>
+                    </TouchableOpacity>
+                </Link>
+                <FlatList
+                    contentContainerStyle={{
+                        gap: 5,
+                    }}
+                    columnWrapperStyle={{
+                        gap: 5,
+                    }}
+                    style={styles.list}
+                    data={formatData(cardValues, numColumns)}
+                    numColumns={numColumns}
+                    renderItem={({item}) => {
+                        if (item.empty) {
                             return (
-                                <FeatureCard
-                                    title={item.title}
-                                    iconName={item.iconName}
-                                    onPress={() => router.push(item.path)}
-                                />
-                            );
-                        }}
-                        keyExtractor={(item) => String(item)}
-                        decelerationRate="fast"
-                    />
-                </ScrollView>
+                                <EmptyFeatureCard/>
+                            )
+                        }
+                        return (
+                            <FeatureCard
+                                title={item.title}
+                                iconName={item.iconName}
+                                onPress={() => router.push(item.path)}
+                            />
+                        );
+                    }}
+                    keyExtractor={(item, index) => index.toString()}
+                    decelerationRate="fast"
+                />
             </SafeAreaView>
         </SafeAreaProvider>
     );
