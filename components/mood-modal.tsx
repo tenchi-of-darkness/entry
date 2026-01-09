@@ -89,7 +89,6 @@ export function MoodModal(props: MoodModalProps) {
     }), [theme]);
 
 
-
     const leftColor = useSharedValue(chroma.css(theme.cats[EmotionValues[activeIndex]]).brighter(0.5).hex());
     const rightColor = useSharedValue(chroma.css(theme.cats[EmotionValues[activeIndex]]).darker(0.5).hex());
 

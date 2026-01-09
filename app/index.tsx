@@ -1,66 +1,108 @@
 import React from 'react';
-import {ScrollView, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import {Colors} from "@/constants/theme";
-import {Link} from "expo-router";
+import {Href, Link, router} from "expo-router";
 import {useColorScheme} from '@/hooks/use-color-scheme';
-import {HappyCat} from "@/components/icons/cats/happy-cat";
-import {AngryCat} from "@/components/icons/cats/angry-cat";
-import {SadCat} from "@/components/icons/cats/sad-cat";
+import FeatureCard from "@/components/mood-card";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 
 const HomeScreen = () => {
     const colorScheme = useColorScheme() ?? 'light';
+    const today = new Date();
+
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+
+    const formattedDate = `${day}/${month}/${year}`;
 
     const styles = React.useMemo(() => StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: Colors[colorScheme].background,
+            backgroundColor: Colors[colorScheme].background
+        },
+        list: {
+            padding: 10
         },
         text: {
-            fontSize: 24,
+            fontSize: 20,
+            fontWeight: 'bold',
+            paddingTop: 20,
             paddingLeft: 20,
+            alignSelf: 'flex-start',
             color: Colors[colorScheme].text,
         },
-        heart: {
-            width: 100,
-            height: 100,
-            borderRadius: 999,
-            backgroundColor: Colors[colorScheme].background,
+        date: {
+            fontSize: 20,
+            fontWeight: 'bold',
+            paddingLeft: 20,
+            alignSelf: 'flex-start',
+            color: Colors[colorScheme].text,
         },
-        row: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 20,
-        },
-        heartContainer: {
-            justifyContent: 'space-between',
-        },
-        heartTopContainer: {
-            justifyContent: 'space-between',
-        }
     }), [colorScheme]);
+
+    const cardValues: {
+        title: string;
+        iconName: React.ComponentProps<typeof FontAwesome>["name"];
+        path: Href;
+    }[] = [
+        {
+            title: "Mood",
+            iconName: "smile-o",
+            path: "/mood"
+        },
+        {
+            title: "Day",
+            iconName: "star",
+            path: "/hobby"
+        },
+        {
+            title: "Sleep",
+            iconName: "moon-o",
+            path: "/sleep"
+        },
+        {
+            title: "Mood",
+            iconName: "smile-o",
+            path: "/mood"
+        }
+        ]
 
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
                 <ScrollView>
+                    <Text style={styles.text}>Good morning, user</Text>
+                    <Text style={styles.date}>{formattedDate}</Text>
                     <Link href="/mood" asChild>
                         <TouchableOpacity
                             style={{padding: 10, marginTop: 20, alignSelf: "center"}}>
-                            <Text style={{color: Colors[colorScheme].text}}>Go to Mood</Text>
                         </TouchableOpacity>
                     </Link>
-                    <HappyCat/>
-                    <AngryCat/>
-                    <SadCat/>
-                    <HappyCat/>
-                    <HappyCat/>
-                    <HappyCat/>
-                    <HappyCat/>
-                    <HappyCat/>
-                    <HappyCat/>
-                    <HappyCat/>
+                    <FlatList
+                        contentContainerStyle={{
+                            gap: 5,
+                        }}
+                        columnWrapperStyle={{
+                            gap: 5,
+                        }}
+                        style={styles.list}
+                        data={cardValues}
+                        numColumns={3}
+                        renderItem={({item}) => {
+                            return (
+                                <FeatureCard
+                                    title={item.title}
+                                    iconName={item.iconName}
+                                    onPress={() => router.push(item.path)}
+                                />
+                            );
+                        }}
+                        keyExtractor={(item) => String(item)}
+                        decelerationRate="fast"
+                    />
                 </ScrollView>
             </SafeAreaView>
         </SafeAreaProvider>
