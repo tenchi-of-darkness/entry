@@ -1,25 +1,26 @@
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
 import React from "react";
-import { StyleSheet, Text, View, Pressable } from "react-native";
-import { MoodModal, useMoodModal } from "@/components/mood-modal";
-import { MoodActionKind, useMoodReducer } from "@/hooks/use-mood-reducer";
-import { useTheme } from "@/hooks/use-theme";
-import { addDays, subDays } from "date-fns";
+import {Pressable, PressableProps, StyleSheet, Text, View} from "react-native";
+import {MoodModal, useMoodModal} from "@/components/mood-modal";
+import {MoodActionKind, useMoodReducer} from "@/hooks/use-mood-reducer";
+import {useTheme} from "@/hooks/use-theme";
+import {addDays, subDays} from "date-fns";
 
-const BubbleSize = 56;
+const BubbleSize = 90;
+
+interface BubbleButtonProps extends PressableProps {
+    color?: string;
+    centeredText?: string;
+}
 
 function BubbleButton({
                           color,
                           centeredText,
-                          onPress,
-                      }: {
-    color?: string;
-    centeredText?: string;
-    onPress?: () => void;
-}) {
+                          ...props
+                      }: BubbleButtonProps) {
     return (
-        <Pressable onPress={onPress}>
-            <View style={[styles.bubble, { backgroundColor: color ?? "#E0E0E0" }]}>
+        <Pressable {...props}>
+            <View style={[styles.bubble, {backgroundColor: color ?? "#E0E0E0"}]}>
                 {centeredText && <Text style={styles.bubbleText}>{centeredText}</Text>}
             </View>
         </Pressable>
@@ -41,7 +42,7 @@ export default function MoodBubbleScreen() {
             : addDays(monday, dayId - 1).getDate().toString();
     };
 
-    const stylesMemo = React.useMemo(
+    const styles = React.useMemo(
         () =>
             StyleSheet.create({
                 container: {
@@ -63,17 +64,33 @@ export default function MoodBubbleScreen() {
                     textAlign: "center",
                     color: theme.text,
                 },
-                bubbleRow: {
-                    flexDirection: "row",
+                bubbleContainer: {
+                    flexDirection: "column",
                     justifyContent: "space-between",
-                    paddingHorizontal: 24,
-                    marginTop: 32,
+                    width: "100%",
+                    padding: 64,
+                    paddingTop: 0,
+                },
+                fourBubbleContainerContainer: {
+                    paddingVertical: 32,
+                },
+                fourBubbleContainer: {
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    justifyContent: "space-between",
+                    paddingHorizontal: 24
+                },
+                threeBubbleContainer: {
+                    paddingTop: 36,
+                    width: "100%",
+                    flexDirection: "column",
+                    gap: 8,
                 },
             }),
         [theme]
     );
 
-    const bubbleElements = Array.from({ length: 7 }).map((_, index) => {
+    const bubbleElements = Array.from({length: 7}).map((_, index) => {
         const dayOfWeek = index + 1;
 
         return (
@@ -81,9 +98,10 @@ export default function MoodBubbleScreen() {
                 key={dayOfWeek}
                 centeredText={getDayLabel(dayOfWeek)}
                 color={theme.cats[moodData[dayOfWeek].measurements[0]?.emotion]}
+                style={index === 5 ? {alignSelf: "center"} : index === 6 ? {alignSelf: "flex-end"} : undefined}
                 onPress={
                     dayOfWeek === currentDayOfWeek
-                        ? () => modal.setState({ visible: true, dayOfWeek })
+                        ? () => modal.setState({visible: true, dayOfWeek})
                         : undefined
                 }
             />
@@ -93,7 +111,7 @@ export default function MoodBubbleScreen() {
     return (
         <SafeAreaProvider>
             <SafeAreaView
-                style={stylesMemo.container}
+                style={styles.container}
                 edges={["top", "bottom", "left", "right"]}
             >
                 <MoodModal
@@ -113,15 +131,27 @@ export default function MoodBubbleScreen() {
                     }}
                 />
 
-                <View style={stylesMemo.dateContainer}>
-                    <Text style={stylesMemo.dateText}>December 1</Text>
-                    <Text style={stylesMemo.dateText}>weekly</Text>
+                <View style={styles.dateContainer}>
+                    <Text style={styles.dateText}>December 1</Text>
+                    <Text style={styles.dateText}>weekly</Text>
                 </View>
 
-                <Text style={stylesMemo.titleText}>Rate my</Text>
-                <Text style={stylesMemo.titleText}>mood</Text>
+                <Text style={styles.titleText}>Rate my</Text>
+                <Text style={styles.titleText}>mood</Text>
 
-                <View style={stylesMemo.bubbleRow}>{bubbleElements}</View>
+                <View style={styles.bubbleContainer}>
+                    <View style={styles.fourBubbleContainerContainer}>
+                        <View style={[styles.fourBubbleContainer, {paddingBottom: 56}]}>
+                            {bubbleElements.slice(0, 2)}
+                        </View>
+                        <View style={styles.fourBubbleContainer}>
+                            {bubbleElements.slice(2, 4)}
+                        </View>
+                    </View>
+                    <View style={styles.threeBubbleContainer}>
+                        {bubbleElements.slice(4, 7)}
+                    </View>
+                </View>
             </SafeAreaView>
         </SafeAreaProvider>
     );
