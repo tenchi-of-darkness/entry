@@ -60,7 +60,7 @@ const HomeScreen = () => {
         {
             title: "Day",
             iconName: "star",
-            path: "/hobby",
+            path: "/day",
             empty: false,
         },
         {
