@@ -59,7 +59,7 @@ const HomeScreen = () => {
         },
         {
             title: "Day",
-            iconName: "star",
+            iconName: "star-o",
             path: "/day",
             empty: false,
         },
@@ -70,9 +70,9 @@ const HomeScreen = () => {
             empty: false,
         },
         {
-            title: "Mood",
-            iconName: "smile-o",
-            path: "/mood",
+            title: "Sleep",
+            iconName: "moon-o",
+            path: "/sleep2",
             empty: false,
         },
         {
@@ -92,7 +92,13 @@ const HomeScreen = () => {
             iconName: "smile-o",
             path: "/mood",
             empty: false,
-        }
+        },
+        {
+            title: "Diary",
+            iconName: "sticky-note-o",
+            path: "/diary",
+            empty: false,
+        },
     ];
 
     const numColumns = 3;

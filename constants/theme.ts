@@ -7,7 +7,7 @@ import {Platform} from 'react-native';
 
 export const ColorPalette = {
     lightGreen: "#72EB9B",
-    aquamarine: "#78E9C8", //Unused
+    aquamarine: "#78E9C8",
     electricAqua: "#7EE6F5",
     frozenWater: "#DCF9EC",
     evergreen: "#062320",
@@ -20,6 +20,7 @@ export const Colors = {
         background: ColorPalette.frozenWater,
         primary: ColorPalette.lightGreen,
         secondary: ColorPalette.jungleTrail,
+        onSecondary: ColorPalette.frozenWater,
         aquamarine: ColorPalette.aquamarine,
         accent: ColorPalette.electricAqua,
         card: ColorPalette.lightGreen,
@@ -36,6 +37,7 @@ export const Colors = {
         background: "#0B1020",
         primary: "#6C8CFF",
         secondary: "#7A8CA8",
+        onSecondary: "#E6E9F2",
         aquamarine: ColorPalette.aquamarine,
         accent: "#8FE3E1",
         card: "#151A33",
