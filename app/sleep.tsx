@@ -4,7 +4,7 @@ import {Pressable, PressableProps, StyleSheet, Text, View} from "react-native";
 import {MoodModal, useMoodModal} from "@/components/mood-modal";
 import {MoodActionKind, useMoodReducer} from "@/hooks/use-mood-reducer";
 import {useTheme} from "@/hooks/use-theme";
-import {addDays, subDays} from "date-fns";
+import {addDays, getWeek, getYear, previousMonday, subDays} from "date-fns";
 
 const BubbleSize = 90;
 
@@ -33,8 +33,10 @@ export default function MoodBubbleScreen() {
     const [moodData, setMoodData] = useMoodReducer();
 
     const now = new Date();
+    const currentYear = getYear(now);
+    const currentWeek = getWeek(now);
     const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
-    const monday = subDays(now, 4);
+    const monday = previousMonday(now);
 
     const getDayLabel = (dayId: number) => {
         return dayId === currentDayOfWeek

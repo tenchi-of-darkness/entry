@@ -1,5 +1,5 @@
 import {useReducer} from "react";
-import {WeekMoodState} from "@/lib/mood/week-mood-state";
+import {MoodState, WeekMoodState} from "@/lib/mood/week-mood-state";
 import {Emotion} from "@/constants/emotions";
 
 const MaxMeasurements = 1;
@@ -37,32 +37,36 @@ export enum MoodActionKind {
 export type MoodAction = {
     type: MoodActionKind.add;
     dayOfWeek: number;
+    weekYear: string;
     emotion: Emotion;
 } | {
     type: MoodActionKind.update;
     dayOfWeek: number;
+    weekYear: string;
     index: number;
     emotion: Emotion;
 } | {
     type: MoodActionKind.hydrate;
-    state: WeekMoodState;
+    weekYear: string;
+    state: MoodState;
 }
 
-function moodReducer(state: WeekMoodState, action: MoodAction) {
+function moodReducer(state: MoodState, action: MoodAction) {
     const type = action.type;
 
     switch (type) {
         case MoodActionKind.add:
-            if (state[action.dayOfWeek].measurements.length >= MaxMeasurements) {
+            if (state[action.weekYear]===undefined){
+                state[action.weekYear]=EmptyWeekMoodState;
+            }
+            if (state[action.weekYear][action.dayOfWeek].measurements.length >= MaxMeasurements) {
                 return state;
             }
         {
-            const emotion = action.emotion;
-            const dayOfWeek = action.dayOfWeek;
 
             let newState = {...state};
-            newState[dayOfWeek].measurements.push({
-                emotion: emotion,
+            newState[action.weekYear][action.dayOfWeek].measurements.push({
+                emotion: action.emotion,
                 date: new Date(),
             })
             return newState;
@@ -71,7 +75,7 @@ function moodReducer(state: WeekMoodState, action: MoodAction) {
             const index = action.index;
             const cutoffTime = new Date();
             cutoffTime.setHours(cutoffTime.getHours() - 2);
-            if (!state[action.dayOfWeek].measurements[index] || state[action.dayOfWeek].measurements[index].date <= cutoffTime) {
+            if (!state[action.weekYear][action.dayOfWeek].measurements[index] || state[action.weekYear][action.dayOfWeek].measurements[index].date <= cutoffTime) {
                 return state;
             }
         {
@@ -80,13 +84,16 @@ function moodReducer(state: WeekMoodState, action: MoodAction) {
 
             let newState = {...state};
 
-            newState[dayOfWeek].measurements[index] = {
+            newState[action.weekYear][dayOfWeek].measurements[index] = {
                 emotion: emotion,
-                date: state[dayOfWeek].measurements[index].date
+                date: state[action.weekYear][dayOfWeek].measurements[index].date
             };
             return newState;
         }
         case MoodActionKind.hydrate:
+            if (action.state[action.weekYear]===undefined){
+                action.state[action.weekYear]=EmptyWeekMoodState;
+            }
             return action.state;
         default:
             return state;
@@ -94,5 +101,5 @@ function moodReducer(state: WeekMoodState, action: MoodAction) {
 }
 
 export function useMoodReducer() {
-    return useReducer(moodReducer, EmptyWeekMoodState)
+    return useReducer(moodReducer, {})
 }

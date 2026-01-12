@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const MOOD_STORAGE_KEY = "@mood_data";
+const MOOD_STORAGE_KEY = "@mood_data_new";
 
 export async function saveMoodData(data: unknown) {
     try {

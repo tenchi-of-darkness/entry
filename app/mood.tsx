@@ -5,7 +5,7 @@ import {HeartButton, HeartButtonSize} from "@/components/heart-button";
 import {MoodModal, useMoodModal} from "@/components/mood-modal";
 import {MoodActionKind, useMoodReducer} from "@/hooks/use-mood-reducer";
 import {useTheme} from "@/hooks/use-theme";
-import {addDays, subDays} from "date-fns";
+import {addDays, getWeek, getYear, previousMonday} from "date-fns";
 import {loadMoodData, saveMoodData} from "@/lib/storage/moodStorage";
 
 export default function MoodScreen() {
@@ -13,12 +13,19 @@ export default function MoodScreen() {
     const theme = useTheme();
     const [moodData, setMoodData] = useMoodReducer();
 
+    const now = new Date();
+    const currentYear = getYear(now);
+    const currentWeek = getWeek(now);
+    const weekYear = `${currentYear}-${currentWeek}`;
+    const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
+    const monday = previousMonday(now);
+
     useEffect(() => {
         async function hydrateMood() {
             const storedMood = await loadMoodData<typeof moodData>();
             if (!storedMood) return;
 
-            setMoodData({type: MoodActionKind.hydrate, state: storedMood});
+            setMoodData({type: MoodActionKind.hydrate, state: storedMood, weekYear});
         }
 
         void hydrateMood();
@@ -64,10 +71,6 @@ export default function MoodScreen() {
         [theme]
     );
 
-    const now = new Date();
-    const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
-    const monday = subDays(now, 4);
-
     const getHeartLabel = (dayId: number) => {
         return dayId === currentDayOfWeek
             ? "Today"
@@ -100,7 +103,7 @@ export default function MoodScreen() {
                             ? () => modal.setState({ visible: true, dayOfWeek: day })
                             : undefined
                     }
-                    color={theme.cats[moodData[day].measurements[0]?.emotion]}
+                    color={theme.cats[moodData[weekYear][day]?.measurements[0]?.emotion]}
                     centeredText={getHeartLabel(day)}
                     reversed={reversed}
                 />
@@ -132,6 +135,7 @@ export default function MoodScreen() {
                         setMoodData({
                             type: MoodActionKind.add,
                             dayOfWeek,
+                            weekYear,
                             emotion,
                         })
                     }
