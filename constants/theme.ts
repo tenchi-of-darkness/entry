@@ -38,6 +38,15 @@ export const Colors = {
             3: "yellow",
             4: "green",
             5: "blue",
+        },
+        pages: {
+            none: "black",
+            belowTen: "red",
+            betweenTenAndTwenty: "blue",
+            betweenTwentyAndForty: "purple",
+            BetweenFortyAndSixty: "orange",
+            BetweenSixtyAndSeventy: "yellow",
+            AboveSeventy: "green",
         }
     },
     dark: {
