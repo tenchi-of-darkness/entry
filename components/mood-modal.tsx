@@ -26,7 +26,7 @@ export function useMoodModal() {
 export interface MoodModalProps {
     state: MoodModalState;
     setVisible: (visible: boolean) => void;
-    setDayOfWeekEmotion: (dayOfWeek: number, emotion: Emotion) => void;
+    setDayOfWeekEmotion: (dayOfWeek: number, emotion: Emotion, weekYear: string) => void;
 }
 
 const EmotionValues = getEmotionEnumValues()
@@ -151,7 +151,7 @@ export function MoodModal(props: MoodModalProps) {
 
                     onPress={() => {
                         props.setVisible(false);
-                        props.setDayOfWeekEmotion(props.state.dayOfWeek, EmotionValues[activeIndex])
+                        props.setDayOfWeekEmotion(props.state.dayOfWeek, EmotionValues[activeIndex], props.state.dayOfWeek.toString())
                     }}
                 >
                     <Text style={styles.buttonText}>Apply</Text>

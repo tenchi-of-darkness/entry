@@ -7,6 +7,7 @@ import {MoodActionKind, useMoodReducer} from "@/hooks/use-mood-reducer";
 import {useTheme} from "@/hooks/use-theme";
 import {addDays, getWeek, getYear, previousMonday} from "date-fns";
 import {loadMoodData, saveMoodData} from "@/lib/storage/moodStorage";
+import {Emotion} from "@/constants/emotions";
 
 export default function MoodScreen() {
     const modal = useMoodModal();
@@ -80,6 +81,19 @@ export default function MoodScreen() {
     const heartRows = [2, 1, 2, 0, -2];
     let heartRowAmountOfHearts = 0;
 
+    function getHeartColor(day: number) {
+        const weekData = moodData[weekYear];
+
+        const dayData = weekData?.[day];
+
+        const emotion = dayData?.measurements?.[0]?.emotion;
+
+        if (emotion) {
+            return theme.cats[emotion];
+        }
+        return theme.accent;
+    }
+
     const heartRowElements = heartRows.map((amountOfHeartsArg, index) => {
         let reversed = false;
         let amountOfHearts = amountOfHeartsArg;
@@ -97,17 +111,18 @@ export default function MoodScreen() {
 
             heartElements.push(
                 <HeartButton
-                    key={i}
+                    key={day}
                     onPress={
-                        currentDayOfWeek === day
+                        day === currentDayOfWeek
                             ? () => modal.setState({ visible: true, dayOfWeek: day })
                             : undefined
                     }
-                    color={theme.cats[moodData[weekYear][day]?.measurements[0]?.emotion]}
+                    color={getHeartColor(day)}
                     centeredText={getHeartLabel(day)}
                     reversed={reversed}
                 />
             );
+
         }
 
         return (
@@ -131,7 +146,7 @@ export default function MoodScreen() {
                     setVisible={(visible) =>
                         modal.setState((prev) => ({ visible, dayOfWeek: prev.dayOfWeek }))
                     }
-                    setDayOfWeekEmotion={(dayOfWeek, emotion) =>
+                    setDayOfWeekEmotion={(dayOfWeek: number, emotion: Emotion) =>
                         setMoodData({
                             type: MoodActionKind.add,
                             dayOfWeek,

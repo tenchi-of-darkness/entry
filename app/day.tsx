@@ -4,7 +4,8 @@ import {Pressable, PressableProps, StyleSheet, Text, View} from "react-native";
 import {MoodModal, useMoodModal} from "@/components/mood-modal";
 import {MoodActionKind, useMoodReducer} from "@/hooks/use-mood-reducer";
 import {useTheme} from "@/hooks/use-theme";
-import {addDays, subDays} from "date-fns";
+import {addDays, getWeek, getYear, subDays} from "date-fns";
+import {Emotion} from "@/constants/emotions";
 
 const BubbleSize = 90;
 
@@ -33,8 +34,24 @@ export default function MoodBubbleScreen() {
     const [moodData, setMoodData] = useMoodReducer();
 
     const now = new Date();
+    const currentYear = getYear(now);
+    const currentWeek = getWeek(now);
+    const weekYear = `${currentYear}-${currentWeek}`;
     const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
     const monday = subDays(now, 4);
+
+    function getTodayColor(day: number) {
+        const weekData = moodData[weekYear];
+
+        const dayData = weekData?.[day];
+
+        const emotion = dayData?.measurements?.[0]?.emotion;
+
+        if (emotion) {
+            return theme.cats[emotion];
+        }
+        return theme.accent;
+    }
 
     const getDayLabel = (dayId: number) => {
         return dayId === currentDayOfWeek
@@ -93,11 +110,16 @@ export default function MoodBubbleScreen() {
     const bubbleElements = Array.from({length: 7}).map((_, index) => {
         const dayOfWeek = index + 1;
 
+        const color =
+            dayOfWeek === currentDayOfWeek
+                ? getTodayColor(currentDayOfWeek)
+                : theme.accent;
+
         return (
             <BubbleButton
                 key={dayOfWeek}
                 centeredText={getDayLabel(dayOfWeek)}
-                color={theme.cats[moodData[dayOfWeek].measurements[0]?.emotion]}
+                color={color}
                 style={index === 5 ? {alignSelf: "center"} : index === 6 ? {alignSelf: "flex-end"} : undefined}
                 onPress={
                     dayOfWeek === currentDayOfWeek
@@ -122,10 +144,11 @@ export default function MoodBubbleScreen() {
                             dayOfWeek: prev.dayOfWeek,
                         }));
                     }}
-                    setDayOfWeekEmotion={(dayOfWeek, emotion) => {
+                    setDayOfWeekEmotion={(dayOfWeek: number, emotion: Emotion) => {
                         setMoodData({
                             type: MoodActionKind.add,
                             dayOfWeek,
+                            weekYear,
                             emotion,
                         });
                     }}

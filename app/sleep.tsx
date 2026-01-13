@@ -35,6 +35,7 @@ export default function MoodBubbleScreen() {
     const now = new Date();
     const currentYear = getYear(now);
     const currentWeek = getWeek(now);
+    const weekYear = `${currentYear}-${currentWeek}`;
     const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
     const monday = previousMonday(now);
 
@@ -99,7 +100,7 @@ export default function MoodBubbleScreen() {
             <BubbleButton
                 key={dayOfWeek}
                 centeredText={getDayLabel(dayOfWeek)}
-                color={theme.cats[moodData[dayOfWeek].measurements[0]?.emotion]}
+                color={theme.cats[moodData[weekYear][dayOfWeek]?.measurements[0]?.emotion]}
                 style={index === 5 ? {alignSelf: "center"} : index === 6 ? {alignSelf: "flex-end"} : undefined}
                 onPress={
                     dayOfWeek === currentDayOfWeek
@@ -128,6 +129,7 @@ export default function MoodBubbleScreen() {
                         setMoodData({
                             type: MoodActionKind.add,
                             dayOfWeek,
+                            weekYear,
                             emotion,
                         });
                     }}
