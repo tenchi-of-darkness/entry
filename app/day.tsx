@@ -1,11 +1,12 @@
 import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
-import React from "react";
+import React, {useEffect} from "react";
 import {Pressable, PressableProps, StyleSheet, Text, View} from "react-native";
-import {MoodModal, useMoodModal} from "@/components/mood-modal";
-import {MoodActionKind, useMoodReducer} from "@/hooks/use-mood-reducer";
 import {useTheme} from "@/hooks/use-theme";
 import {addDays, getWeek, getYear, subDays} from "date-fns";
-import {Emotion} from "@/constants/emotions";
+import {RateActionKind, useRateReducer} from "@/hooks/use-rate-reducer";
+import {loadRateData, saveRateData} from "@/lib/storage/rateStorage";
+import {getRatingColor, RateModal, useRateModal} from "@/components/rate-modal";
+import {mix} from "chroma.ts";
 
 const BubbleSize = 90;
 
@@ -14,24 +15,10 @@ interface BubbleButtonProps extends PressableProps {
     centeredText?: string;
 }
 
-function BubbleButton({
-                          color,
-                          centeredText,
-                          ...props
-                      }: BubbleButtonProps) {
-    return (
-        <Pressable {...props}>
-            <View style={[styles.bubble, {backgroundColor: color ?? "#E0E0E0"}]}>
-                {centeredText && <Text style={styles.bubbleText}>{centeredText}</Text>}
-            </View>
-        </Pressable>
-    );
-}
-
 export default function MoodBubbleScreen() {
-    const modal = useMoodModal();
+    const modal = useRateModal();
     const theme = useTheme();
-    const [moodData, setMoodData] = useMoodReducer();
+    const [rateData, setRateData] = useRateReducer();
 
     const now = new Date();
     const currentYear = getYear(now);
@@ -40,18 +27,30 @@ export default function MoodBubbleScreen() {
     const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
     const monday = subDays(now, 4);
 
-    function getTodayColor(day: number) {
-        const weekData = moodData[weekYear];
-
-        const dayData = weekData?.[day];
-
-        const emotion = dayData?.measurements?.[0]?.emotion;
-
-        if (emotion) {
-            return theme.cats[emotion];
-        }
-        return theme.accent;
+    function BubbleButton({
+                              color,
+                              centeredText,
+                              ...props
+                          }: BubbleButtonProps) {
+        return (
+            <Pressable {...props}>
+                <View style={[styles.bubble, {backgroundColor: color ?? "#E0E0E0"}]}>
+                    {centeredText && <Text style={styles.bubbleText}>{centeredText}</Text>}
+                </View>
+            </Pressable>
+        );
     }
+
+    useEffect(() => {
+        async function hydrateRate() {
+            const storedDayRate = await loadRateData<typeof rateData>();
+            if (!storedDayRate) return;
+
+            setRateData({type: RateActionKind.hydrate, state: storedDayRate, weekYear});
+        }
+
+        void hydrateRate();
+    }, []);
 
     const getDayLabel = (dayId: number) => {
         return dayId === currentDayOfWeek
@@ -65,6 +64,18 @@ export default function MoodBubbleScreen() {
                 container: {
                     flex: 1,
                     backgroundColor: theme.background,
+                },
+                bubble: {
+                    width: BubbleSize,
+                    height: BubbleSize,
+                    borderRadius: BubbleSize / 2,
+                    alignItems: "center",
+                    justifyContent: "center",
+                },
+                bubbleText: {
+                    fontSize: 14,
+                    fontWeight: "600",
+                    color: "#000",
                 },
                 dateContainer: {
                     flexDirection: "row",
@@ -107,12 +118,22 @@ export default function MoodBubbleScreen() {
         [theme]
     );
 
+    function getDayColor(day: number) {
+        const weekData = rateData[weekYear];
+
+        const dayData = weekData?.[day];
+
+        const rating = dayData?.measurements?.[0]?.rating;
+
+        return getRatingColor(theme, rating);
+    }
+
     const bubbleElements = Array.from({length: 7}).map((_, index) => {
         const dayOfWeek = index + 1;
 
         const color =
             dayOfWeek === currentDayOfWeek
-                ? getTodayColor(currentDayOfWeek)
+                ? getDayColor(currentDayOfWeek)
                 : theme.accent;
 
         return (
@@ -136,7 +157,7 @@ export default function MoodBubbleScreen() {
                 style={styles.container}
                 edges={["top", "bottom", "left", "right"]}
             >
-                <MoodModal
+                <RateModal
                     state={modal.state}
                     setVisible={(visible) => {
                         modal.setState((prev) => ({
@@ -144,13 +165,14 @@ export default function MoodBubbleScreen() {
                             dayOfWeek: prev.dayOfWeek,
                         }));
                     }}
-                    setDayOfWeekEmotion={(dayOfWeek: number, emotion: Emotion) => {
-                        setMoodData({
-                            type: MoodActionKind.add,
+                    setDayOfWeekRating={async (dayOfWeek: number, rating: number) => {
+                        setRateData({
+                            type: RateActionKind.add,
                             dayOfWeek,
                             weekYear,
-                            emotion,
+                            rating,
                         });
+                        await  saveRateData(rateData);
                     }}
                 />
 
@@ -178,19 +200,4 @@ export default function MoodBubbleScreen() {
             </SafeAreaView>
         </SafeAreaProvider>
     );
-}
-
-const styles = StyleSheet.create({
-    bubble: {
-        width: BubbleSize,
-        height: BubbleSize,
-        borderRadius: BubbleSize / 2,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    bubbleText: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: "#000",
-    },
-});
+};

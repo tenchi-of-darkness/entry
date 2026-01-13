@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    StyleSheet,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    Modal,
+    Pressable
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '@/hooks/use-theme';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import LinedPaper from '@/components/lined-paper';
+import {convertStackStateToNonModalState} from "expo-router/build/modal/web/utils";
+import * as fs from "node:fs";
 
 const PASSCODE_KEY = 'diary_passcode_v1';
 const DIARY_CONTENT_KEY = 'diary_content_v1';
@@ -19,6 +32,7 @@ export default function DiaryPage() {
     const [confirmPasscode, setConfirmPasscode] = useState('');
     const [diaryContent, setDiaryContent] = useState('');
     const [error, setError] = useState('');
+    const [alertDialogVisible, setAlertDialogVisible] = useState(false);
 
     useEffect(() => {
         const checkPasscode = async () => {
@@ -70,7 +84,7 @@ export default function DiaryPage() {
     
     const handleSaveNote = async () => {
         await AsyncStorage.setItem(DIARY_CONTENT_KEY, diaryContent);
-        Alert.alert('Saved', 'Your diary has been saved.');
+        setAlertDialogVisible(true);
     };
 
     const styles = React.useMemo(() => StyleSheet.create({
@@ -85,7 +99,7 @@ export default function DiaryPage() {
         },
         passcodeContainer: {
             padding: 20,
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            backgroundColor: theme.background,
             borderRadius: 10,
         },
         diaryContainer: {
@@ -101,7 +115,7 @@ export default function DiaryPage() {
             textAlignVertical: 'top',
             paddingHorizontal: 0,
             paddingTop: 0,
-            color: '#333',
+            color: theme.text,
             backgroundColor: 'transparent',
         },
         title: {
@@ -126,7 +140,39 @@ export default function DiaryPage() {
             color: 'red',
             textAlign: 'center',
             marginTop: 10,
-        }
+        },
+        centeredView: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        modalView: {
+            margin: 15,
+            backgroundColor: theme.secondary,
+            borderRadius: 20,
+            padding: 20,
+            alignItems: 'center',
+        },
+        button: {
+            borderRadius: 20,
+            padding: 10,
+        },
+        buttonOpen: {
+            backgroundColor: theme.accent,
+        },
+        buttonClose: {
+            backgroundColor: theme.onSecondary,
+        },
+        textStyle: {
+            color: theme.text,
+            fontWeight: 'bold',
+            textAlign: 'center',
+        },
+        modalText: {
+            marginBottom: 10,
+            textAlign: 'center',
+            color: theme.text
+        },
     }), [theme]);
 
     const renderPasscodeScreen = () => (
@@ -194,6 +240,25 @@ export default function DiaryPage() {
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 {authStatus === 'UNLOCKED' ? renderDiary() : renderPasscodeScreen()}
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={alertDialogVisible}
+                    onRequestClose={() => {
+                        Alert.alert('Modal has been closed.');
+                        setAlertDialogVisible(false);
+                    }}>
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalText}>Diary entry is saved!</Text>
+                            <Pressable
+                                style={[styles.button, styles.buttonClose]}
+                                onPress={() => setAlertDialogVisible(false)}>
+                                <Text style={styles.textStyle}>Ok</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </Modal>
             </SafeAreaView>
         </SafeAreaProvider>
     );

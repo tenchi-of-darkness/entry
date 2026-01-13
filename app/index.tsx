@@ -66,25 +66,7 @@ const HomeScreen = () => {
         {
             title: "Sleep",
             iconName: "moon-o",
-            path: "/sleep2",
-            empty: false,
-        },
-        {
-            title: "Mood",
-            iconName: "smile-o",
-            path: "/mood",
-            empty: false,
-        },
-        {
-            title: "Mood",
-            iconName: "smile-o",
-            path: "/mood",
-            empty: false,
-        },
-        {
-            title: "Mood",
-            iconName: "smile-o",
-            path: "/mood",
+            path: "/sleep",
             empty: false,
         },
         {

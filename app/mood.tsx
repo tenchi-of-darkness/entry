@@ -32,10 +32,6 @@ export default function MoodScreen() {
         void hydrateMood();
     }, []);
 
-    useEffect(() => {
-        void saveMoodData(moodData);
-    }, [moodData]);
-
     const styles = React.useMemo(
         () =>
             StyleSheet.create({
@@ -81,7 +77,7 @@ export default function MoodScreen() {
     const heartRows = [2, 1, 2, 0, -2];
     let heartRowAmountOfHearts = 0;
 
-    function getHeartColor(day: number) {
+    function getDayColor(day: number) {
         const weekData = moodData[weekYear];
 
         const dayData = weekData?.[day];
@@ -117,7 +113,7 @@ export default function MoodScreen() {
                             ? () => modal.setState({ visible: true, dayOfWeek: day })
                             : undefined
                     }
-                    color={getHeartColor(day)}
+                    color={getDayColor(day)}
                     centeredText={getHeartLabel(day)}
                     reversed={reversed}
                 />
@@ -146,13 +142,15 @@ export default function MoodScreen() {
                     setVisible={(visible) =>
                         modal.setState((prev) => ({ visible, dayOfWeek: prev.dayOfWeek }))
                     }
-                    setDayOfWeekEmotion={(dayOfWeek: number, emotion: Emotion) =>
+                    setDayOfWeekEmotion={async (dayOfWeek: number, emotion: Emotion) => {
                         setMoodData({
                             type: MoodActionKind.add,
                             dayOfWeek,
                             weekYear,
                             emotion,
-                        })
+                        });
+                        await saveMoodData(moodData);
+                    }
                     }
                 />
 

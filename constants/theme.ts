@@ -30,6 +30,14 @@ export const Colors = {
             happy: "#f0e056",
             angry: "#d20131",
             sad: "#204fe7"
+        },
+        rating: {
+            0: "black",
+            1: "red",
+            2: "orange",
+            3: "yellow",
+            4: "green",
+            5: "blue",
         }
     },
     dark: {
@@ -37,7 +45,7 @@ export const Colors = {
         background: "#0B1020",
         primary: "#6C8CFF",
         secondary: "#7A8CA8",
-        onSecondary: "#E6E9F2",
+        onSecondary: "#2A3351",
         aquamarine: ColorPalette.aquamarine,
         accent: "#8FE3E1",
         card: "#151A33",
@@ -47,6 +55,14 @@ export const Colors = {
             happy: "#bfaf02",
             angry: "#a4001b",
             sad: "#102F95"
+        },
+        rating: {
+            0: "black",
+            1: "red",
+            2: "orange",
+            3: "yellow",
+            4: "green",
+            5: "blue",
         }
     },
 };
