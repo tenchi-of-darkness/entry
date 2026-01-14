@@ -2,7 +2,7 @@ import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
 import React, {useEffect} from "react";
 import {Pressable, PressableProps, StyleSheet, Text, View} from "react-native";
 import {useTheme} from "@/hooks/use-theme";
-import {addDays, getWeek, getYear, subDays} from "date-fns";
+import {addDays, getWeek, getYear, previousMonday, subDays} from "date-fns";
 import {RateActionKind, useRateReducer} from "@/hooks/use-rate-reducer";
 import {loadRateData, saveRateData} from "@/lib/storage/rateStorage";
 import {getRatingColor, RateModal, useRateModal} from "@/components/rate-modal";
@@ -25,7 +25,7 @@ export default function MoodBubbleScreen() {
     const currentWeek = getWeek(now);
     const weekYear = `${currentYear}-${currentWeek}`;
     const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
-    const monday = subDays(now, 4);
+    const monday = previousMonday(now);
 
     function BubbleButton({
                               color,
@@ -51,6 +51,10 @@ export default function MoodBubbleScreen() {
 
         void hydrateRate();
     }, []);
+
+    useEffect(() => {
+        saveRateData(rateData);
+    }, [rateData]);
 
     const getDayLabel = (dayId: number) => {
         return dayId === currentDayOfWeek
@@ -165,20 +169,18 @@ export default function MoodBubbleScreen() {
                             dayOfWeek: prev.dayOfWeek,
                         }));
                     }}
-                    setDayOfWeekRating={async (dayOfWeek: number, rating: number) => {
+                    setDayOfWeekRating={(dayOfWeek: number, rating: number) => {
                         setRateData({
                             type: RateActionKind.add,
                             dayOfWeek,
                             weekYear,
                             rating,
                         });
-                        await  saveRateData(rateData);
                     }}
                 />
 
                 <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>December 1</Text>
-                    <Text style={styles.dateText}>weekly</Text>
+                    <Text style={styles.dateText}>{now.toDateString()}</Text>
                 </View>
 
                 <Text style={styles.titleText}>Rate my</Text>

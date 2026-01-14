@@ -38,8 +38,6 @@ export function BookModal({ visible, onClose, onSave, book }: BookModalProps) {
             onSave({ ...book, title, author, note, rating });
             onClose();
         } else {
-            // This case should ideally not happen if book is always provided for editing
-            // Or if this modal is also used for adding new books, then a new ID would be needed here.
             Alert.alert("Error", "No book data to save.");
         }
     };
@@ -109,13 +107,15 @@ export function BookModal({ visible, onClose, onSave, book }: BookModalProps) {
             alignItems: 'center',
         },
         buttonSave: {
-            backgroundColor: Colors.light.tint,
+            color: theme.text,
+            backgroundColor: theme.accent,
         },
         buttonClose: {
-            backgroundColor: Colors.light.tabIconDefault,
+            color: theme.text,
+            backgroundColor: theme.primary,
         },
         textStyle: {
-            color: 'white',
+            color: theme.text,
             fontWeight: 'bold',
             textAlign: 'center',
         },
@@ -160,7 +160,7 @@ export function BookModal({ visible, onClose, onSave, book }: BookModalProps) {
                                 <FontAwesome
                                     name={starIndex <= rating ? 'star' : 'star-o'}
                                     size={30}
-                                    color={Colors.light.tint}
+                                    color={theme.text}
                                     style={styles.star}
                                 />
                             </TouchableOpacity>

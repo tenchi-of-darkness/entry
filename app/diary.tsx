@@ -15,9 +15,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '@/hooks/use-theme';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import LinedPaper from '@/components/lined-paper';
-import {convertStackStateToNonModalState} from "expo-router/build/modal/web/utils";
-import * as fs from "node:fs";
-
 const PASSCODE_KEY = 'diary_passcode_v1';
 const DIARY_CONTENT_KEY = 'diary_content_v1';
 
@@ -50,8 +47,22 @@ export default function DiaryPage() {
     useEffect(() => {
         const loadDiaryContent = async () => {
             if (authStatus === 'UNLOCKED') {
-                const content = await AsyncStorage.getItem(DIARY_CONTENT_KEY);
-                setDiaryContent(content || '');
+                let content = await AsyncStorage.getItem(DIARY_CONTENT_KEY);
+                content = content || '';
+
+                const today = new Date();
+                const dateString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                const dateMarker = `--- ${dateString} ---`;
+
+                if (!content.includes(dateMarker)) {
+                    if (content.trim().length > 0) {
+                        content = `${content.trim()}\n\n${dateMarker}\n\n`;
+                    } else {
+                        content = dateMarker;
+                    }
+                }
+
+                setDiaryContent(content);
             }
         };
         loadDiaryContent();
@@ -182,6 +193,7 @@ export default function DiaryPage() {
                     <Text style={styles.title}>Set a Passcode for your Diary</Text>
                     <TextInput
                         style={styles.input}
+                        placeholderTextColor={theme.text}
                         placeholder="Enter 4+ digit passcode"
                         keyboardType="numeric"
                         secureTextEntry
@@ -190,6 +202,7 @@ export default function DiaryPage() {
                     />
                     <TextInput
                         style={styles.input}
+                        placeholderTextColor={theme.text}
                         placeholder="Confirm passcode"
                         keyboardType="numeric"
                         secureTextEntry
@@ -205,6 +218,7 @@ export default function DiaryPage() {
                     <Text style={styles.title}>Enter Passcode</Text>
                     <TextInput
                         style={styles.input}
+                        placeholderTextColor={theme.text}
                         placeholder="Enter passcode"
                         keyboardType="numeric"
                         secureTextEntry

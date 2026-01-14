@@ -6,13 +6,14 @@ import {useTheme} from "@/hooks/use-theme";
 interface FeatureCardProps extends TouchableOpacityProps {
     title: string;
     iconName: React.ComponentProps<typeof FontAwesome>["name"];
+    backgroundColor?: string;
 }
 
 const cardPadding = 10;
 
 export const EmptyFeatureCard: React.FC = () => <View style={{flex: 1, padding: cardPadding, backgroundColor: 'transparent'}}/>
 export const FeatureCard: React.FC<FeatureCardProps> = ({
-                                                     title, iconName, onPress, ...props
+                                                     title, iconName, onPress, backgroundColor, ...props
                                                  }) => {
     const theme = useTheme();
 
@@ -21,7 +22,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
             (StyleSheet.create({
                 card: {
                     flex: 1,
-                    backgroundColor: theme.secondary,
+                    backgroundColor: backgroundColor || theme.secondary,
                     borderRadius: 15,
                     padding: cardPadding,
                     justifyContent: "center",

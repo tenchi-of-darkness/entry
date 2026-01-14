@@ -45,6 +45,10 @@ function Pages() {
         return pagesData.map(d => getPagesColor(d.measurements[0]?.pages));
     }, [pagesData, theme]);
 
+    useEffect(() => {
+        savePagesData(pagesData);
+    }, [pagesData]);
+
     const styles = React.useMemo(() => StyleSheet.create({
         container: {
             flex: 1,
@@ -74,23 +78,32 @@ function Pages() {
                 <PagesModal
                     state={modal.state}
                     setVisible={(visible) => modal.setState(prev => ({ ...prev, visible }))}
-                    setDayOfMonthHours={async (dayOfMonth, pages) => {
+                    setDayOfMonthHours={(dayOfMonth, pages) => {
                         setPagesData({
                             type: PagesActionKind.add,
                             dayOfMonth,
                             pages,
                         });
-                        await savePagesData(pagesData);
                     }}
                 />
 
                 <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>{currentMonth}</Text>
-                    <Text style={styles.dateText}>monthly</Text>
+                    <Text style={styles.dateText}>{now.toDateString()}</Text>
                 </View>
 
                 <Text style={styles.titleText}>Track my pages</Text>
-                <TouchableOpacity onPress={() => modal.setState({ visible: true, dayOfMonth: new Date().getDate() })}>
+                <TouchableOpacity activeOpacity={pagesData[now.getDate()-1].measurements.length !== 0 ? 1 : undefined} onPress={pagesData[now.getDate()-1].measurements.length === 0 ? () => modal.setState({ visible: true, dayOfMonth: now.getDate() }) : undefined}>
+                    <View style={{
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        justifyContent: "center"
+                    }}>
+                        <Text style={[styles.dateText, {
+                            alignSelf: "center",
+                            fontSize: 28,
+                        }]}>{String(currentMonth).charAt(0).toUpperCase() + String(currentMonth).slice(1)}</Text>
+                    </View>
                     <MonthCircle daysInMonth={daysInMonth} moods={pagesForCircle} />
                 </TouchableOpacity>
 

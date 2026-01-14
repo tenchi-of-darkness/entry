@@ -1,18 +1,19 @@
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect, useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { HeartButton, HeartButtonSize } from "@/components/heart-button";
-import { MoodModal, useMoodModal } from "@/components/mood-modal";
-import { MoodActionKind, useMoodReducer } from "@/hooks/use-mood-reducer";
-import { useTheme } from "@/hooks/use-theme";
-import { addDays, getWeek, getYear, previousMonday } from "date-fns";
-import { loadMoodData, saveMoodData } from "@/lib/storage/moodStorage";
-import { Emotion } from "@/constants/emotions";
+import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
+import React, {useEffect, useMemo, useState} from "react";
+import {ColorValue, StyleSheet, Text, View} from "react-native";
+import {HeartButton, HeartButtonSize} from "@/components/heart-button";
+import {MoodModal, useMoodModal} from "@/components/mood-modal";
+import {MoodActionKind, useMoodReducer} from "@/hooks/use-mood-reducer";
+import {useTheme} from "@/hooks/use-theme";
+import {addDays, getWeek, getYear, previousMonday} from "date-fns";
+import {loadMoodData, saveMoodData} from "@/lib/storage/moodStorage";
+import {Emotion} from "@/constants/emotions";
 
 export default function MoodScreen() {
     const modal = useMoodModal();
     const theme = useTheme();
     const [moodData, setMoodData] = useMoodReducer();
+    const [shouldSave, setShouldSave] = useState(false);
 
     const weekYear = useMemo(() => {
         const now = new Date();
@@ -35,12 +36,15 @@ export default function MoodScreen() {
             });
         }
 
-        hydrateMood();
+        hydrateMood().catch(console.error);
     }, [weekYear, setMoodData]);
 
     useEffect(() => {
-        saveMoodData(moodData);
-    }, [moodData]);
+        if(shouldSave){
+            saveMoodData(moodData).catch(console.error);
+            setShouldSave(false);
+        }
+    }, [shouldSave, moodData]);
 
     const styles = useMemo(
         () =>
@@ -78,16 +82,28 @@ export default function MoodScreen() {
         [theme]
     );
 
+    console.log(JSON.stringify(moodData))
+
     const getHeartLabel = (day: number) =>
         day === currentDayOfWeek
             ? "Today"
             : addDays(monday, day - 1).getDate().toString();
 
-    function getDayColor(day: number) {
-        const emotion =
-            moodData[weekYear]?.[day]?.measurements?.[0]?.emotion;
+    function getDayColors(day: number): [ColorValue, ColorValue, ...ColorValue[]] {
+        const emotionMeasurements =
+            moodData[weekYear]?.[day]?.measurements;
 
-        return emotion ? theme.cats[emotion] : theme.accent;
+        let colors = emotionMeasurements?.map(x => theme.cats[x.emotion] as ColorValue) ?? [];
+
+        if(colors?.length === 1){
+            colors.push(colors[0]);
+        }
+
+        if(colors?.length === 0){
+            colors = [theme.primary, theme.secondary]
+        }
+
+        return colors as [ColorValue, ColorValue, ...ColorValue[]];
     }
 
     const heartRows = [2, 1, 2, 0, -2];
@@ -112,7 +128,7 @@ export default function MoodScreen() {
                                 }))
                             : undefined
                     }
-                    color={getDayColor(day)}
+                    colors={getDayColors(day)}
                     centeredText={getHeartLabel(day)}
                     reversed={reversed}
                 />
@@ -141,19 +157,19 @@ export default function MoodScreen() {
                     setVisible={(visible) =>
                         modal.setState((prev) => ({ ...prev, visible }))
                     }
-                    setDayOfWeekEmotion={(dayOfWeek: number, emotion: Emotion) => {
+                    setDayOfWeekEmotion={async (dayOfWeek: number, emotion: Emotion) => {
                         setMoodData({
                             type: MoodActionKind.add,
                             dayOfWeek,
                             weekYear,
                             emotion,
-                        });
+                        })
+                        setShouldSave(true)
                     }}
                 />
 
                 <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>This Week</Text>
-                    <Text style={styles.dateText}>weekly</Text>
+                    <Text style={styles.dateText}>{now.toDateString()}</Text>
                 </View>
 
                 <Text style={styles.titleText}>Rate my</Text>

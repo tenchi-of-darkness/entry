@@ -1,5 +1,6 @@
 import { useReducer } from "react";
 import { BookMeasurement } from "@/lib/books/book-measurement";
+import {randomUUID} from "expo-crypto";
 
 export type BooksState = BookMeasurement[];
 
@@ -35,7 +36,7 @@ function booksReducer(state: BooksState, action: BooksAction): BooksState {
     switch (action.type) {
         case BooksActionKind.add: {
             const newBook: BookMeasurement = {
-                id: "",
+                id: randomUUID(),
                 title: action.title,
                 author: action.author,
                 note: action.note,

@@ -2,16 +2,22 @@ import {HappyCat} from "@/components/icons/cats/happy-cat";
 import {AngryCat} from "@/components/icons/cats/angry-cat";
 import {SadCat} from "@/components/icons/cats/sad-cat";
 import {AnxiousCat} from "@/components/icons/cats/anxious-cat";
+import {LonelyCat} from "@/components/icons/cats/lonely-cat";
+import {ExcitedCat} from "@/components/icons/cats/excited-cat";
+import {CalmCat} from "@/components/icons/cats/calm-cat";
+import {ProudCat} from "@/components/icons/cats/proud-cat";
+import {ShockedCat} from "@/components/icons/cats/shocked-cat";
+import {OkayCat} from "@/components/icons/cats/okay-cat";
 
 export const Emotion = {
     Happy: "happy",
-    // Energetic: "energetic",
-    // Calm: "calm",
-    // Okay: "okay",
-    // Tired: "tired",
+    Excited: "excited",
+    Calm: "calm",
+    Okay: "okay",
+    Proud: "proud",
     Anxious: "anxious",
-    // Stressed: "stressed",
-    // Lonely: "lonely",
+    Shocked: "shocked",
+    Lonely: "lonely",
     Sad: "sad",
     Angry: "angry",
 } as const;
@@ -36,5 +42,17 @@ export function getEmotionIcon(emotion: Emotion) {
             return <SadCat/>;
         case Emotion.Anxious:
             return <AnxiousCat/>;
+        case Emotion.Lonely:
+            return <LonelyCat/>;
+        case Emotion.Excited:
+            return <ExcitedCat/>;
+        case Emotion.Calm:
+            return <CalmCat/>;
+        case Emotion.Proud:
+            return <ProudCat/>;
+        case Emotion.Shocked:
+            return <ShockedCat/>;
+        case Emotion.Okay:
+            return <OkayCat/>;
     }
 }

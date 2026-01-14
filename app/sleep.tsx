@@ -1,7 +1,7 @@
 import MonthCircle from "@/components/month-circle";
 import React, {useEffect, useMemo} from 'react';
 import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
-import {StyleSheet, Text, View} from "react-native";
+import {Dimensions, StyleSheet, Text, View} from "react-native";
 import {useTheme} from "@/hooks/use-theme";
 import {loadSleepData, saveSleepData} from "@/lib/storage/sleepStorage";
 import {SleepActionKind, useSleepReducer} from "@/hooks/use-sleep-reducer";
@@ -29,26 +29,23 @@ function Sleep() {
         void hydrateSleep();
     }, []);
 
-    const getSleepColor = (hours: number | undefined): string => {
-        if (hours === undefined) return theme.secondary;
+    useEffect(() => {
+        saveSleepData(sleepData);
+    }, [sleepData]);
+
+    const getSleepColor = (hours: number | undefined): string | undefined => {
+        if (hours === undefined) return undefined;
         if (hours < 6) return theme.cats.angry;
         if (hours > 9) return theme.cats.sad;
         return theme.cats.happy;
     }
 
-    const todayIndex = now.getDate() - 1;
-
     const moodsForCircle = useMemo(() => {
-        return sleepData.map((day, index) => {
+        return sleepData.map((day) => {
             const hours = day.measurements[0]?.hours;
-
-            if (index === todayIndex && hours === undefined) {
-                return theme.primary;
-            }
-
             return getSleepColor(hours);
         });
-    }, [sleepData, theme, todayIndex]);
+    }, [sleepData, theme]);
 
     const styles = React.useMemo(() => StyleSheet.create({
         container: {
@@ -79,7 +76,7 @@ function Sleep() {
                 <SleepModal
                     state={modal.state}
                     setVisible={(visible) => modal.setState(prev => ({ ...prev, visible }))}
-                    setDayOfMonthHours={async (dayOfMonth: number, hours: number, dayOfWeek: number, weekYear: number) => {
+                    setDayOfMonthHours={(dayOfMonth: number, hours: number, dayOfWeek: number, weekYear: number) => {
                         setSleepData({
                             type: SleepActionKind.add,
                             dayOfMonth,
@@ -87,13 +84,11 @@ function Sleep() {
                             weekYear,
                             hours,
                         });
-                        await saveSleepData(sleepData);
                     }}
                 />
 
                 <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>{currentMonth}</Text>
-                    <Text style={styles.dateText}>monthly</Text>
+                    <Text style={styles.dateText}>{now.toDateString()}</Text>
                 </View>
 
                 <Text style={styles.titleText}>My Sleep</Text>
@@ -106,6 +101,17 @@ function Sleep() {
                         }))
                     }
                 >
+                    <View style={{
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        justifyContent: "center"
+                    }}>
+                        <Text style={[styles.dateText, {
+                            alignSelf: "center",
+                            fontSize: 28,
+                        }]}>{String(currentMonth).charAt(0).toUpperCase() + String(currentMonth).slice(1)}</Text>
+                    </View>
                     <MonthCircle daysInMonth={daysInMonth} moods={moodsForCircle} />
                 </TouchableOpacity>
 

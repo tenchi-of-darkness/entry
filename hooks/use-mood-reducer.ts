@@ -2,7 +2,7 @@ import { useReducer } from "react";
 import { MoodState, WeekMoodState } from "@/lib/mood/week-mood-state";
 import { Emotion } from "@/constants/emotions";
 
-const MaxMeasurements = 1;
+const MaxMeasurements = 3;
 
 export function createEmptyWeekMoodState(): WeekMoodState {
     return {
@@ -18,7 +18,6 @@ export function createEmptyWeekMoodState(): WeekMoodState {
 
 export enum MoodActionKind {
     add = "add",
-    update = "update",
     hydrate = "hydrate",
 }
 
@@ -27,13 +26,6 @@ export type MoodAction =
     type: MoodActionKind.add;
     dayOfWeek: number;
     weekYear: string;
-    emotion: Emotion;
-}
-    | {
-    type: MoodActionKind.update;
-    dayOfWeek: number;
-    weekYear: string;
-    index: number;
     emotion: Emotion;
 }
     | {
@@ -49,13 +41,13 @@ function moodReducer(state: MoodState, action: MoodAction): MoodState {
                 state[action.weekYear] ??
                 createEmptyWeekMoodState();
 
-            const newMeasurements = [
-                ...(week[action.dayOfWeek]?.measurements ?? []),
-                {
-                    emotion: action.emotion,
-                    date: new Date(),
-                },
-            ].slice(-MaxMeasurements);
+            const newMeasurements = [...week[action.dayOfWeek]?.measurements];
+
+            if(newMeasurements.length === MaxMeasurements){
+                return state;
+            }
+
+            newMeasurements.push({emotion: action.emotion, date: new Date()});
 
             return {
                 ...state,
@@ -63,38 +55,6 @@ function moodReducer(state: MoodState, action: MoodAction): MoodState {
                     ...week,
                     [action.dayOfWeek]: {
                         measurements: newMeasurements,
-                    },
-                },
-            };
-        }
-
-        case MoodActionKind.update: {
-            const { weekYear, dayOfWeek, index, emotion } = action;
-
-            const week = state[weekYear];
-            if (!week) return state;
-
-            const measurement = week[dayOfWeek].measurements[index];
-            if (!measurement) return state;
-
-            const cutoffTime = new Date();
-            cutoffTime.setHours(cutoffTime.getHours() - 2);
-
-            if (measurement.date <= cutoffTime) {
-                return state;
-            }
-
-            return {
-                ...state,
-                [weekYear]: {
-                    ...week,
-                    [dayOfWeek]: {
-                        measurements: week[dayOfWeek].measurements.map(
-                            (m, i) =>
-                                i === index
-                                    ? { ...m, emotion }
-                                    : m
-                        ),
                     },
                 },
             };

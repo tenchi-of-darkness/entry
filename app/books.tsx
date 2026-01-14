@@ -11,7 +11,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const Books = () => {
     const theme = useTheme();
-    const [books, dispatch] = useBooksReducer();
+    const [books, setBooks] = useBooksReducer();
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedBook, setSelectedBook] = useState<BookMeasurement | null>(null);
     const [ratingSelectionModalVisible, setRatingSelectionModalVisible] = useState(false);
@@ -20,7 +20,7 @@ const Books = () => {
         const fetchBooks = async () => {
             const storedBooks = await loadBooksData<BookMeasurement[]>();
             if (storedBooks) {
-                dispatch({type: BooksActionKind.hydrate, state: storedBooks});
+                setBooks({type: BooksActionKind.hydrate, state: storedBooks});
             }
         };
         fetchBooks();
@@ -45,7 +45,7 @@ const Books = () => {
 
     const handleModalSave = (book: BookMeasurement) => {
         if (book.id === 'new-book-placeholder') {
-            dispatch({
+            setBooks({
                 type: BooksActionKind.add,
                 title: book.title,
                 author: book.author,
@@ -53,7 +53,7 @@ const Books = () => {
                 rating: book.rating,
             });
         } else {
-            dispatch({type: BooksActionKind.update, book: book});
+            setBooks({type: BooksActionKind.update, book: book});
         }
         setModalVisible(false);
         setSelectedBook(null);
@@ -150,7 +150,7 @@ const Books = () => {
             marginTop: 20,
         },
         cancelButtonText: {
-            color: 'white',
+            color: theme.accent,
             fontWeight: 'bold',
         }
     }), [theme]);
@@ -165,7 +165,7 @@ const Books = () => {
                     <FlatList
                         data={books}
                         renderItem={({item}) => (
-                            <BookCard book={item} onPress={() => handleCardPress(item)}/>
+                            <BookCard book={item} onPress={() => handleCardPress(item)} onPressRemove={() => setBooks({type: BooksActionKind.remove, id: item.id})} />
                         )}
                         keyExtractor={(item) => item.id}
                         contentContainerStyle={styles.list}
