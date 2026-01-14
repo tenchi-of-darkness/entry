@@ -11,12 +11,14 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 const HomeScreen = () => {
     const colorScheme = useColorScheme() ?? 'light';
     const today = new Date();
+    const monthName = today.toLocaleDateString('en-US', { month: 'long' });
+    const weekdayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+    const dayOfMonth = today.getDate();
 
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = today.getFullYear();
+    const formattedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+    const formattedWeekday = weekdayName.charAt(0).toUpperCase() + weekdayName.slice(1);
 
-    const formattedDate = `${day}/${month}/${year}`;
+    const formattedDate = `${formattedMonth} ${formattedWeekday} ${dayOfMonth}`;
 
     const styles = React.useMemo(() => StyleSheet.create({
         container: {
@@ -79,6 +81,7 @@ const HomeScreen = () => {
             title: "Pages",
             iconName: "bookmark-o",
             path: "/pages",
+
             empty: false,
         },
     ];
