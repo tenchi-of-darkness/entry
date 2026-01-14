@@ -7,7 +7,6 @@ import {useColorScheme} from '@/hooks/use-color-scheme';
 import {EmptyFeatureCard, FeatureCard} from "@/components/mood-card";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
-
 const HomeScreen = () => {
     const colorScheme = useColorScheme() ?? 'light';
     const today = new Date();
@@ -79,9 +78,14 @@ const HomeScreen = () => {
         },
         {
             title: "Pages",
-            iconName: "bookmark-o",
+            iconName: "paperclip",
             path: "/pages",
-
+            empty: false,
+        },
+        {
+            title: "Books",
+            iconName: "book",
+            path: "/books",
             empty: false,
         },
     ];

@@ -1,23 +1,25 @@
-import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
-import React, {useEffect} from "react";
-import {StyleSheet, Text, View} from "react-native";
-import {HeartButton, HeartButtonSize} from "@/components/heart-button";
-import {MoodModal, useMoodModal} from "@/components/mood-modal";
-import {MoodActionKind, useMoodReducer} from "@/hooks/use-mood-reducer";
-import {useTheme} from "@/hooks/use-theme";
-import {addDays, getWeek, getYear, previousMonday} from "date-fns";
-import {loadMoodData, saveMoodData} from "@/lib/storage/moodStorage";
-import {Emotion} from "@/constants/emotions";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import React, { useEffect, useMemo } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { HeartButton, HeartButtonSize } from "@/components/heart-button";
+import { MoodModal, useMoodModal } from "@/components/mood-modal";
+import { MoodActionKind, useMoodReducer } from "@/hooks/use-mood-reducer";
+import { useTheme } from "@/hooks/use-theme";
+import { addDays, getWeek, getYear, previousMonday } from "date-fns";
+import { loadMoodData, saveMoodData } from "@/lib/storage/moodStorage";
+import { Emotion } from "@/constants/emotions";
 
 export default function MoodScreen() {
     const modal = useMoodModal();
     const theme = useTheme();
     const [moodData, setMoodData] = useMoodReducer();
 
+    const weekYear = useMemo(() => {
+        const now = new Date();
+        return `${getYear(now)}-${getWeek(now, { weekStartsOn: 1 })}`;
+    }, []);
+
     const now = new Date();
-    const currentYear = getYear(now);
-    const currentWeek = getWeek(now);
-    const weekYear = `${currentYear}-${currentWeek}`;
     const currentDayOfWeek = now.getDay() === 0 ? 7 : now.getDay();
     const monday = previousMonday(now);
 
@@ -26,13 +28,21 @@ export default function MoodScreen() {
             const storedMood = await loadMoodData<typeof moodData>();
             if (!storedMood) return;
 
-            setMoodData({type: MoodActionKind.hydrate, state: storedMood, weekYear});
+            setMoodData({
+                type: MoodActionKind.hydrate,
+                state: storedMood,
+                weekYear,
+            });
         }
 
-        void hydrateMood();
-    }, []);
+        hydrateMood();
+    }, [weekYear, setMoodData]);
 
-    const styles = React.useMemo(
+    useEffect(() => {
+        saveMoodData(moodData);
+    }, [moodData]);
+
+    const styles = useMemo(
         () =>
             StyleSheet.create({
                 container: {
@@ -68,47 +78,34 @@ export default function MoodScreen() {
         [theme]
     );
 
-    const getHeartLabel = (dayId: number) => {
-        return dayId === currentDayOfWeek
+    const getHeartLabel = (day: number) =>
+        day === currentDayOfWeek
             ? "Today"
-            : addDays(monday, dayId - 1).getDate().toString();
-    };
-
-    const heartRows = [2, 1, 2, 0, -2];
-    let heartRowAmountOfHearts = 0;
+            : addDays(monday, day - 1).getDate().toString();
 
     function getDayColor(day: number) {
-        const weekData = moodData[weekYear];
-        const emotion = weekData?.[day]?.measurements?.[0]?.emotion;
+        const emotion =
+            moodData[weekYear]?.[day]?.measurements?.[0]?.emotion;
 
-        if (emotion) {
-            return theme.cats[emotion];
-        }
-        return theme.accent;
+        return emotion ? theme.cats[emotion] : theme.accent;
     }
 
-    const heartRowElements = heartRows.map((amountOfHeartsArg, index) => {
-        let reversed = false;
-        let amountOfHearts = amountOfHeartsArg;
+    const heartRows = [2, 1, 2, 0, -2];
+    let heartIndex = 0;
 
-        if (amountOfHearts < 0) {
-            reversed = true;
-            amountOfHearts = Math.abs(amountOfHearts);
-        }
+    const heartRowElements = heartRows.map((count, rowIndex) => {
+        const reversed = count < 0;
+        const hearts = Array.from({ length: Math.abs(count) }, () => {
+            heartIndex++;
+            const day = heartIndex;
 
-        const heartElements: React.ReactElement[] = [];
-
-        for (let i = 0; i < amountOfHearts; i++) {
-            heartRowAmountOfHearts++;
-            const day = heartRowAmountOfHearts;
-
-            heartElements.push(
+            return (
                 <HeartButton
                     key={day}
                     onPress={
                         day === currentDayOfWeek
                             ? () =>
-                                modal.setState(prev => ({
+                                modal.setState((prev) => ({
                                     ...prev,
                                     visible: true,
                                     dayOfWeek: day,
@@ -120,18 +117,17 @@ export default function MoodScreen() {
                     reversed={reversed}
                 />
             );
-
-        }
+        });
 
         return (
             <View
-                key={index}
+                key={rowIndex}
                 style={[
                     styles.heartRow,
-                    amountOfHeartsArg === 1 && { justifyContent: "center" },
+                    count === 1 && { justifyContent: "center" },
                 ]}
             >
-                {heartElements}
+                {hearts}
             </View>
         );
     });
@@ -143,24 +139,20 @@ export default function MoodScreen() {
                     state={modal.state}
                     weekYear={weekYear}
                     setVisible={(visible) =>
-                        modal.setState((prev) => ({ visible, dayOfWeek: prev.dayOfWeek }))
+                        modal.setState((prev) => ({ ...prev, visible }))
                     }
-                    setDayOfWeekEmotion={async (dayOfWeek: number, emotion: Emotion) => {
+                    setDayOfWeekEmotion={(dayOfWeek: number, emotion: Emotion) => {
                         setMoodData({
                             type: MoodActionKind.add,
                             dayOfWeek,
                             weekYear,
                             emotion,
                         });
-                        useEffect(() => {
-                            saveMoodData(moodData);
-                        }, [moodData]);
-                    }
-                }
+                    }}
                 />
 
                 <View style={styles.dateContainer}>
-                    <Text style={styles.dateText}>December 1</Text>
+                    <Text style={styles.dateText}>This Week</Text>
                     <Text style={styles.dateText}>weekly</Text>
                 </View>
 
