@@ -1,6 +1,7 @@
 import {HappyCat} from "@/components/icons/cats/happy-cat";
 import {AngryCat} from "@/components/icons/cats/angry-cat";
 import {SadCat} from "@/components/icons/cats/sad-cat";
+import {AnxiousCat} from "@/components/icons/cats/anxious-cat";
 
 export const Emotion = {
     Happy: "happy",
@@ -8,7 +9,7 @@ export const Emotion = {
     // Calm: "calm",
     // Okay: "okay",
     // Tired: "tired",
-    // Anxious: "anxious",
+    Anxious: "anxious",
     // Stressed: "stressed",
     // Lonely: "lonely",
     Sad: "sad",
@@ -33,5 +34,7 @@ export function getEmotionIcon(emotion: Emotion) {
             return <AngryCat/>;
         case Emotion.Sad:
             return <SadCat/>;
+        case Emotion.Anxious:
+            return <AnxiousCat/>;
     }
 }

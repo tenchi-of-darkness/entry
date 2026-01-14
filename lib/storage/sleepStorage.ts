@@ -20,3 +20,11 @@ export async function loadSleepData<T>(): Promise<T | undefined> {
         return undefined;
     }
 }
+
+export async function clearSleepData() {
+    try {
+        await AsyncStorage.removeItem(SleepStorageKey);
+    } catch (error) {
+        console.error("Failed to clear sleep data", error);
+    }
+}

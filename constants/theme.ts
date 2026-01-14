@@ -29,7 +29,8 @@ export const Colors = {
             insideBorders: ColorPalette.evergreen,
             happy: "#f0e056",
             angry: "#d20131",
-            sad: "#204fe7"
+            sad: "#204fe7",
+            anxious: "#e34840",
         },
         rating: {
             0: "black",
@@ -63,7 +64,8 @@ export const Colors = {
             insideBorders: ColorPalette.evergreen,
             happy: "#bfaf02",
             angry: "#a4001b",
-            sad: "#102F95"
+            sad: "#102F95",
+            anxious: "#e34840",
         },
         rating: {
             0: "black",
@@ -72,6 +74,15 @@ export const Colors = {
             3: "yellow",
             4: "green",
             5: "blue",
+        },
+        pages: {
+            none: "black",
+            belowTen: "red",
+            betweenTenAndTwenty: "blue",
+            betweenTwentyAndForty: "purple",
+            BetweenFortyAndSixty: "orange",
+            BetweenSixtyAndSeventy: "yellow",
+            AboveSeventy: "green",
         }
     },
 };

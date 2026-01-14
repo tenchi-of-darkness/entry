@@ -79,10 +79,7 @@ export default function MoodScreen() {
 
     function getDayColor(day: number) {
         const weekData = moodData[weekYear];
-
-        const dayData = weekData?.[day];
-
-        const emotion = dayData?.measurements?.[0]?.emotion;
+        const emotion = weekData?.[day]?.measurements?.[0]?.emotion;
 
         if (emotion) {
             return theme.cats[emotion];
@@ -110,7 +107,12 @@ export default function MoodScreen() {
                     key={day}
                     onPress={
                         day === currentDayOfWeek
-                            ? () => modal.setState({ visible: true, dayOfWeek: day })
+                            ? () =>
+                                modal.setState(prev => ({
+                                    ...prev,
+                                    visible: true,
+                                    dayOfWeek: day,
+                                }))
                             : undefined
                     }
                     color={getDayColor(day)}
@@ -139,6 +141,7 @@ export default function MoodScreen() {
             <SafeAreaView style={styles.container}>
                 <MoodModal
                     state={modal.state}
+                    weekYear={weekYear}
                     setVisible={(visible) =>
                         modal.setState((prev) => ({ visible, dayOfWeek: prev.dayOfWeek }))
                     }
@@ -149,9 +152,11 @@ export default function MoodScreen() {
                             weekYear,
                             emotion,
                         });
-                        await saveMoodData(moodData);
+                        useEffect(() => {
+                            saveMoodData(moodData);
+                        }, [moodData]);
                     }
-                    }
+                }
                 />
 
                 <View style={styles.dateContainer}>

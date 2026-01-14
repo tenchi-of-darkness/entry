@@ -1,8 +1,19 @@
 import React from "react";
 
+export function createEmptyMonthSleepState(): MonthSleepState {
+    return Array.from({ length: 31 }, () => ({
+        measurements: [],
+    }));
+}
+
+export const initialSleepState: MonthSleepState =
+    createEmptyMonthSleepState();
+
 export interface SleepMeasurement {
-    hours: number;
     timestamp: string;
+    hours: number;
+    dayOfWeek: number;
+    weekYear: number;
 }
 
 export interface SleepState {
@@ -14,47 +25,79 @@ export type MonthSleepState = SleepState[];
 export enum SleepActionKind {
     add = "add",
     hydrate = "hydrate",
+    update = "update",
 }
 
-export interface SleepAction {
+export type SleepAction =
+    | {
     type: SleepActionKind.add;
     dayOfMonth: number;
+    dayOfWeek: number;
+    weekYear: number;
     hours: number;
 }
-
-export interface HydrateSleepAction {
+    | {
+    type: SleepActionKind.update;
+    dayOfMonth: number;
+    index: number;
+    hours: number;
+}
+    | {
     type: SleepActionKind.hydrate;
     state: MonthSleepState;
-}
-
-const initialSleepState: MonthSleepState = Array.from({ length: 31 }, () => ({ measurements: [] }));
+};
 
 export function sleepReducer(
     state: MonthSleepState,
-    action: SleepAction | HydrateSleepAction
+    action: SleepAction
 ): MonthSleepState {
     switch (action.type) {
         case SleepActionKind.hydrate:
-            // Ensure the hydrated state has entries for all 31 days
-            if (action.state.length < 31) {
-                const newState = [...action.state];
-                while (newState.length < 31) {
-                    newState.push({ measurements: [] });
-                }
-                return newState;
-            }
-            return action.state;
-        case SleepActionKind.add:
-            const newMeasurement: SleepMeasurement = {
-                hours: action.hours,
-                timestamp: new Date().toISOString(),
-            };
+            return action.state.length === 31
+                ? action.state
+                : createEmptyMonthSleepState();
+
+        case SleepActionKind.add: {
             const dayIndex = action.dayOfMonth - 1;
+            if (dayIndex < 0 || dayIndex > 30) return state;
+
+            const newMeasurement: SleepMeasurement = {
+                timestamp: new Date().toISOString(),
+                hours: action.hours,
+                dayOfWeek: action.dayOfWeek,
+                weekYear: action.weekYear,
+            };
+
             const newState = [...state];
             newState[dayIndex] = {
-                measurements: [newMeasurement], // For now, only one measurement per day
+                measurements: [
+                    ...newState[dayIndex].measurements,
+                    newMeasurement,
+                ],
             };
+
             return newState;
+        }
+
+        case SleepActionKind.update: {
+            const dayIndex = action.dayOfMonth - 1;
+            if (dayIndex < 0 || dayIndex > 30) return state;
+
+            const day = state[dayIndex];
+            if (!day) return state;
+
+            if (!day.measurements[action.index]) return state;
+
+            const newMeasurements = day.measurements.map((m, i) =>
+                i === action.index ? { ...m, hours: action.hours } : m
+            );
+
+            const newState = [...state];
+            newState[dayIndex] = { measurements: newMeasurements };
+
+            return newState;
+        }
+
         default:
             return state;
     }

@@ -75,6 +75,12 @@ const HomeScreen = () => {
             path: "/diary",
             empty: false,
         },
+        {
+            title: "Pages",
+            iconName: "bookmark-o",
+            path: "/pages",
+            empty: false,
+        },
     ];
 
     const numColumns = 3;

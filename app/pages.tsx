@@ -3,42 +3,47 @@ import React, {useEffect, useMemo} from 'react';
 import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
 import {StyleSheet, Text, View} from "react-native";
 import {useTheme} from "@/hooks/use-theme";
-import {loadSleepData, saveSleepData} from "@/lib/storage/sleepStorage";
-import {SleepActionKind, useSleepReducer} from "@/hooks/use-sleep-reducer";
 import {getDaysInMonth} from "date-fns";
-import {useSleepModal, SleepModal} from "@/components/sleep-modal";
 import {TouchableOpacity} from "react-native";
+import {PagesActionKind, usePagesReducer} from "@/hooks/use-pages-reducer";
+import {loadPagesData, savePagesData} from "@/lib/storage/pagesStorage";
+import {PagesModal, usePagesModal} from "@/components/pages-modal";
 
-function Sleep() {
+function Pages() {
     const theme = useTheme();
-    const [sleepData, setSleepData] = useSleepReducer();
-    const modal = useSleepModal();
+    const [pagesData, setPagesData] = usePagesReducer();
+    const modal = usePagesModal();
 
     const now = new Date();
     const daysInMonth = getDaysInMonth(now);
     const currentMonth = now.toLocaleString('default', { month: 'long' });
 
     useEffect(() => {
-        async function hydrateSleep() {
-            const storedSleep = await loadSleepData<typeof sleepData>();
-            if (!storedSleep) return;
+        async function hydratePages() {
+            const storedPages = await loadPagesData<typeof pagesData>();
+            if (!storedPages) return;
 
-            setSleepData({type: SleepActionKind.hydrate, state: storedSleep});
+            setPagesData({type: PagesActionKind.hydrate, state: storedPages});
         }
 
-        void hydrateSleep();
+        void hydratePages();
     }, []);
 
-    const getSleepColor = (hours: number | undefined): string => {
-        if (hours === undefined) return theme.secondary;
-        if (hours < 6) return theme.cats.angry;
-        if (hours > 9) return theme.cats.sad;
+    const getPagesColor = (pages: number | undefined): string => {
+        if (pages === undefined) return theme.secondary;
+        if (pages <= 0) return theme.pages.none;
+        if (pages < 10) return theme.pages.belowTen;
+        if (pages >= 10 && pages < 20) return theme.pages.betweenTenAndTwenty;
+        if (pages >= 20 && pages < 40) return theme.pages.betweenTwentyAndForty
+        if (pages >= 40 && pages < 60) return theme.pages.BetweenFortyAndSixty;
+        if (pages >= 60 && pages < 70) return theme.pages.BetweenSixtyAndSeventy;
+        if (pages >= 70) return theme.pages.AboveSeventy;
         return theme.cats.happy;
     }
 
-    const moodsForCircle = useMemo(() => {
-        return sleepData.map(d => getSleepColor(d.measurements[0]?.hours));
-    }, [sleepData, theme]);
+    const pagesForCircle = useMemo(() => {
+        return pagesData.map(d => getPagesColor(d.measurements[0]?.pages));
+    }, [pagesData, theme]);
 
     const styles = React.useMemo(() => StyleSheet.create({
         container: {
@@ -66,16 +71,16 @@ function Sleep() {
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container} edges={['top', 'right', 'bottom', 'left']}>
-                <SleepModal
+                <PagesModal
                     state={modal.state}
                     setVisible={(visible) => modal.setState(prev => ({ ...prev, visible }))}
-                    setDayOfMonthHours={async (dayOfMonth, hours) => {
-                        setSleepData({
-                            type: SleepActionKind.add,
+                    setDayOfMonthHours={async (dayOfMonth, pages) => {
+                        setPagesData({
+                            type: PagesActionKind.add,
                             dayOfMonth,
-                            hours,
+                            pages,
                         });
-                        await saveSleepData(sleepData);
+                        await savePagesData(pagesData);
                     }}
                 />
 
@@ -84,9 +89,9 @@ function Sleep() {
                     <Text style={styles.dateText}>monthly</Text>
                 </View>
 
-                <Text style={styles.titleText}>My Sleep</Text>
+                <Text style={styles.titleText}>Track my pages</Text>
                 <TouchableOpacity onPress={() => modal.setState({ visible: true, dayOfMonth: new Date().getDate() })}>
-                    <MonthCircle daysInMonth={daysInMonth} moods={moodsForCircle} />
+                    <MonthCircle daysInMonth={daysInMonth} moods={pagesForCircle} />
                 </TouchableOpacity>
 
             </SafeAreaView>
@@ -94,4 +99,4 @@ function Sleep() {
     );
 }
 
-export default Sleep;
+export default Pages;

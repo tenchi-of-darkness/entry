@@ -50,11 +50,12 @@ function moodReducer(state: MoodState, action: MoodAction): MoodState {
                 createEmptyWeekMoodState();
 
             const newMeasurements = [
+                ...(week[action.dayOfWeek]?.measurements ?? []),
                 {
                     emotion: action.emotion,
                     date: new Date(),
-                }
-            ];
+                },
+            ].slice(-MaxMeasurements);
 
             return {
                 ...state,
@@ -100,9 +101,13 @@ function moodReducer(state: MoodState, action: MoodAction): MoodState {
         }
 
         case MoodActionKind.hydrate: {
-            return action.state;
+            return {
+                ...action.state,
+                [action.weekYear]:
+                    action.state[action.weekYear] ??
+                    createEmptyWeekMoodState(),
+            };
         }
-
         default:
             return state;
     }

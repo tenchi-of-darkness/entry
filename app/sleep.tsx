@@ -36,9 +36,19 @@ function Sleep() {
         return theme.cats.happy;
     }
 
+    const todayIndex = now.getDate() - 1;
+
     const moodsForCircle = useMemo(() => {
-        return sleepData.map(d => getSleepColor(d.measurements[0]?.hours));
-    }, [sleepData, theme]);
+        return sleepData.map((day, index) => {
+            const hours = day.measurements[0]?.hours;
+
+            if (index === todayIndex && hours === undefined) {
+                return theme.primary;
+            }
+
+            return getSleepColor(hours);
+        });
+    }, [sleepData, theme, todayIndex]);
 
     const styles = React.useMemo(() => StyleSheet.create({
         container: {
@@ -69,10 +79,12 @@ function Sleep() {
                 <SleepModal
                     state={modal.state}
                     setVisible={(visible) => modal.setState(prev => ({ ...prev, visible }))}
-                    setDayOfMonthHours={async (dayOfMonth, hours) => {
+                    setDayOfMonthHours={async (dayOfMonth: number, hours: number, dayOfWeek: number, weekYear: number) => {
                         setSleepData({
                             type: SleepActionKind.add,
                             dayOfMonth,
+                            dayOfWeek,
+                            weekYear,
                             hours,
                         });
                         await saveSleepData(sleepData);
@@ -85,7 +97,15 @@ function Sleep() {
                 </View>
 
                 <Text style={styles.titleText}>My Sleep</Text>
-                <TouchableOpacity onPress={() => modal.setState({ visible: true, dayOfMonth: new Date().getDate() })}>
+                <TouchableOpacity
+                    onPress={() =>
+                        modal.setState(prev => ({
+                            ...prev,
+                            visible: true,
+                            dayOfMonth: new Date().getDate(),
+                        }))
+                    }
+                >
                     <MonthCircle daysInMonth={daysInMonth} moods={moodsForCircle} />
                 </TouchableOpacity>
 
