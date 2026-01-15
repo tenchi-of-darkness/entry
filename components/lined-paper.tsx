@@ -10,9 +10,8 @@ interface LinedPaperProps {
 const LinedPaper: React.FC<LinedPaperProps> = ({ contentPaddingTop = 0, contentPaddingBottom = 0 }) => {
     const theme = useTheme();
     const { height } = Dimensions.get('window');
-    const lineHeight = 28; // Same as diaryInput lineHeight
+    const lineHeight = 28;
     
-    // Calculate available height for lines after accounting for padding
     const availableHeight = height - contentPaddingTop - contentPaddingBottom;
     const numberOfLines = Math.floor(availableHeight / lineHeight);
 
@@ -21,7 +20,7 @@ const LinedPaper: React.FC<LinedPaperProps> = ({ contentPaddingTop = 0, contentP
             ...StyleSheet.absoluteFillObject,
             paddingTop: contentPaddingTop,
             paddingBottom: contentPaddingBottom,
-            overflow: 'hidden', // Hide lines that go beyond padding
+            overflow: 'hidden',
         },
         line: {
             borderBottomColor: theme.secondary,

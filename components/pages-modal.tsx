@@ -70,11 +70,14 @@ export function PagesModal(props: PagesModalProps) {
             alignSelf: "center",
             paddingTop: 60,
             paddingBottom: 20,
+            paddingHorizontal: 30,
+            width: '80%',
+            textAlign: 'center',
         },
         arrowButton: {
             position: 'absolute',
             top: '50%',
-            marginTop: -25, // Half of button height
+            marginTop: -25,
             width: 50,
             height: 50,
             borderRadius: 25,

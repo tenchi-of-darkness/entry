@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert} from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {useTheme} from "@/hooks/use-theme";
-import {Colors} from "@/constants/theme";
 import {BookMeasurement} from "@/lib/books/book-measurement";
 
 export interface BookModalProps {
@@ -168,16 +167,16 @@ export function BookModal({ visible, onClose, onSave, book }: BookModalProps) {
                     </View>
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
-                            style={[styles.button, styles.buttonSave]}
-                            onPress={handleSave}
-                        >
-                            <Text style={styles.textStyle}>Save</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
                             style={[styles.button, styles.buttonClose]}
                             onPress={onClose}
                         >
                             <Text style={styles.textStyle}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.button, styles.buttonSave]}
+                            onPress={handleSave}
+                        >
+                            <Text style={styles.textStyle}>Save</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
