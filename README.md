@@ -1,50 +1,75 @@
-# Welcome to your Expo app 👋
+# Entry
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Entry is a personal diary and wellness tracking application built with React Native and Expo. It allows users to log their daily mood, sleep patterns, and reading progress.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Mood Tracking:** Log your mood daily with a selection of expressive cat-themed icons.
+- **Sleep Tracking:** Record your sleep duration and quality.
+- **Book Tracking:** Keep a list of books you are currently reading and the pages you've read.
+- **Diary:** Write down your thoughts and feelings for each day.
+- **Data Persistence:** Your data is saved locally on your device using Async Storage.
 
-   ```bash
-   npm install
-   ```
+## Tech Stack
 
-2. Start the app
+- [React Native](https://reactnative.dev/)
+- [Expo](https://expo.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Expo Router](https://expo.github.io/router/) for navigation
+- [Async Storage](https://react-native-async-storage.github.io/async-storage/) for local data storage
+- [React Native Skia](https://shopify.github.io/react-native-skia/) for custom UI elements
+- [date-fns](https://date-fns.org/) for date manipulation
 
-   ```bash
-   npx expo start
-   ```
+## Getting Started
 
-In the output, you'll find options to open the app in a
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Prerequisites
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+You will need Node.js and npm/pnpm/yarn installed on your machine. You will also need the Expo Go app on your mobile device to run the app.
 
-## Get a fresh project
+### Installation
 
-When you're ready, run:
+1.  Clone the repo
+    ```sh
+    git clone https://github.com/tenchi-of-darkness/entry.git
+    ```
+2.  Install dependencies
+    ```sh
+    pnpm install
+    ```
 
-```bash
-npm run reset-project
-```
+### Running the application
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+1.  Start the Expo development server
+    ```sh
+    pnpm start
+    ```
+2.  Scan the QR code with the Expo Go app on your Android or iOS device.
 
-## Learn more
+You can also run the app on an emulator or on the web:
 
-To learn more about developing your project with Expo, look at the following resources:
+-   Run on Android:
+    ```sh
+    pnpm android
+    ```
+-   Run on iOS:
+    ```sh
+    pnpm ios
+    ```
+-   Run on Web:
+    ```sh
+    pnpm web
+    ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Folder Structure
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+    .
+    ├── app                 # Expo Router app directory with all the screens
+    ├── assets              # Images, fonts, and other static assets
+    ├── components          # Reusable React components
+    ├── constants           # Theme, colors, and other constant values
+    ├── contexts            # React contexts for state management
+    ├── hooks               # Custom React hooks
+    ├── lib                 # Core application logic and data storage
+    └── scripts             # Utility scripts for the project
